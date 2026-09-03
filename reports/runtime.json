@@ -1,0 +1,25 @@
+{
+  "transactions_processed": 917792,
+  "wall_clock_s": 54.3,
+  "throughput_per_s": 16904.0,
+  "test_window_decisions": {
+    "allow": 158757,
+    "step_up": 439,
+    "review": 0,
+    "block": 943
+  },
+  "decision_latency_us": {
+    "p50": 55.2,
+    "p95": 85.7,
+    "p99": 106.1,
+    "max": 649.8
+  },
+  "end_to_end_latency_us_incl_model": {
+    "p50": 7938.6,
+    "p95": 9936.9,
+    "p99": 11981.7
+  },
+  "audit_records": 1699,
+  "audit_chain_ok": true,
+  "audit_chain_message": "chain intact across 1,699 records, head e13b21d1d7afb23d"
+}

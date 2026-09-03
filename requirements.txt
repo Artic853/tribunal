@@ -1,0 +1,20 @@
+# Core. Everything else in the project is standard library.
+pandas>=2.2
+numpy>=1.26
+scikit-learn>=1.6      # FrozenEstimator (calibration without refitting) needs >=1.6
+pyarrow>=15.0          # parquet
+
+# API
+fastapi>=0.110
+uvicorn>=0.29
+pydantic>=2.6
+
+# Figures
+matplotlib>=3.8
+
+# Tests
+pytest>=8.0
+
+# Optional: fluent case memos. The system runs without it and falls back to
+# deterministic templates.
+# anthropic>=0.40

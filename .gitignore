@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Regenerable: `bash scripts/generate_data.sh` rebuilds the raw data from a seed,
+# and the build scripts rebuild everything below it. Nothing here is a source.
+data/
+raw/
+raw05/
+artifacts/*.pkl
+artifacts/*.jsonl
+
+# Keep reports/ committed - the figures and metrics are part of the submission.

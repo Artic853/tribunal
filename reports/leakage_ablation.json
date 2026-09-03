@@ -1,0 +1,30 @@
+{
+  "full feature set": {
+    "honest (temporal split, point-in-time features)": {
+      "roc_auc": 0.9985292785795837,
+      "pr_auc": 0.9313200458431163
+    },
+    "leaky aggregates (temporal split)": {
+      "roc_auc": 0.9980706100482131,
+      "pr_auc": 0.9421454677253607
+    },
+    "random split + leaky aggregates": {
+      "roc_auc": 0.9995810207384926,
+      "pr_auc": 0.9673747545739086
+    }
+  },
+  "weak feature set": {
+    "honest (temporal split, point-in-time features)": {
+      "roc_auc": 0.9976002632845551,
+      "pr_auc": 0.8978870675046955
+    },
+    "leaky aggregates (temporal split)": {
+      "roc_auc": 0.9983113007989699,
+      "pr_auc": 0.9072091861353906
+    },
+    "random split + leaky aggregates": {
+      "roc_auc": 0.9983783970803765,
+      "pr_auc": 0.9348242530329511
+    }
+  }
+}

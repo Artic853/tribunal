@@ -1,0 +1,121 @@
+==============================================================================
+CAUGHT
+==============================================================================
+Declined: 314 at Bauch-Raynor (grocery_pos).
+Model probability of fraud 100.00%. Expected cost of this action 0, versus 814 if
+approved outright.
+
+Evidence:
+  - [model] Model puts fraud probability at 100.00% - top 0.01% of scored traffic.
+
+Checks that did not fire: velocity, geo, spend_profile, merchant_risk, novelty,
+temporal.
+
+==============================================================================
+CAUGHT
+==============================================================================
+Declined: 307 at Kuhic Inc (grocery_pos).
+Model probability of fraud 100.00%. Expected cost of this action 0, versus 807 if
+approved outright.
+
+Evidence:
+  - [model] Model puts fraud probability at 100.00% - top 0.01% of scored traffic.
+
+Checks that did not fire: velocity, geo, spend_profile, merchant_risk, novelty,
+temporal.
+
+==============================================================================
+CAUGHT
+==============================================================================
+Declined: 11 at Jenkins, Hauck and Friesen (gas_transport).
+Model probability of fraud 100.00%. Expected cost of this action 0, versus 511 if
+approved outright.
+
+Evidence:
+  - [model] Model puts fraud probability at 100.00% - top 0.01% of scored traffic.
+  - [novelty] First-time merchant never used by this card.
+
+Checks that did not fire: velocity, geo, spend_profile, merchant_risk, temporal.
+
+==============================================================================
+FALSE_POSITIVE
+==============================================================================
+Challenged with an additional authentication factor: 1,342 at Gottlieb, Considine and
+Schultz (shopping_net).
+Model probability of fraud 10.14%. Expected cost of this action 58, versus 187 if
+approved outright.
+
+Evidence:
+  - [spend_profile] Amount 1,342 is 23.4x this card's average and 9.9 standard
+deviations above it.
+  - [model] Model puts fraud probability at 10.14% - top 1% of scored traffic.
+
+Checks that did not fire: velocity, geo, merchant_risk, novelty, temporal.
+
+==============================================================================
+FALSE_POSITIVE
+==============================================================================
+Challenged with an additional authentication factor: 19 at Ratke and Sons
+(health_fitness).
+Model probability of fraud 75.00%. Expected cost of this action 58, versus 389 if
+approved outright.
+
+Evidence:
+  - [model] Model puts fraud probability at 75.00% - top 1% of scored traffic.
+  - [novelty] First-time merchant never used by this card.
+
+Checks that did not fire: velocity, geo, spend_profile, merchant_risk, temporal.
+
+==============================================================================
+FALSE_POSITIVE
+==============================================================================
+Challenged with an additional authentication factor: 633 at Rodriguez, Yost and Jenkins
+(misc_net).
+Model probability of fraud 3.49%. Expected cost of this action 39, versus 40 if approved
+outright.
+
+Evidence:
+  - [spend_profile] Amount 633 is 13.2x this card's average and 4.9 standard deviations
+above it.
+
+Checks that did not fire: velocity, geo, merchant_risk, novelty, temporal, model.
+
+==============================================================================
+MISSED_BIG
+==============================================================================
+Approved: 601 at Hamill-Daugherty (misc_net).
+Model probability of fraud 3.49%. Expected cost of this action 38, versus 38 if approved
+outright.
+
+Evidence:
+  - [spend_profile] Amount 601 is 10.8x this card's average and 4.4 standard deviations
+above it.
+
+Checks that did not fire: velocity, geo, merchant_risk, novelty, temporal, model.
+
+==============================================================================
+MISSED_BIG
+==============================================================================
+Approved: 956 at Spencer-Runolfsson (misc_pos).
+Model probability of fraud 0.66%. Expected cost of this action 10, versus 10 if approved
+outright.
+
+Evidence:
+  - [spend_profile] Amount 956 is 18.0x this card's average and 9.2 standard deviations
+above it.
+
+Checks that did not fire: velocity, geo, merchant_risk, novelty, temporal, model.
+
+==============================================================================
+MISSED_BIG
+==============================================================================
+Approved: 532 at Goldner-Lemke (entertainment).
+Model probability of fraud 0.66%. Expected cost of this action 7, versus 7 if approved
+outright.
+
+Evidence:
+  - [spend_profile] Amount 532 is 9.9x this card's average and 4.7 standard deviations
+above it.
+
+Checks that did not fire: velocity, geo, merchant_risk, novelty, temporal, model.
+
