@@ -20,7 +20,7 @@ import numpy as np
 import pandas as pd
 
 from tribunal.economics import CostModel, Decision
-from tribunal.policy import ReviewBudget, decide, expected_costs
+from tribunal.policy import ACTIONS, ReviewBudget, decide, expected_costs
 from tribunal.tools.base import Evidence
 from tribunal.tools.heuristics import registry
 
@@ -135,6 +135,53 @@ def make_tribunal(capacity_per_day: int, use_overrides: bool = True) -> PolicyFn
 
     fn.__name__ = f"tribunal_cap{capacity_per_day}" + ("" if use_overrides else "_no_overrides")
     return fn
+
+
+def expected_cost_vectorised(
+    p: np.ndarray, amt: np.ndarray, cm: CostModel
+) -> np.ndarray:
+    """Expected-cost minimisation over the four actions, in closed form.
+
+    Every term in `economics.expected_cost` is linear in the amount, so the whole
+    policy is four columns of arithmetic and an argmin. The row-by-row version in
+    `expected_cost_policy` stays the reference implementation - it is the one the
+    live agent shares - and `tests/test_vectorised_policy.py` asserts the two agree
+    exactly on a sample.
+
+    This exists because the sensitivity analysis re-runs the policy a few hundred
+    times over 160,000 rows, and at ~11 s per pass the loop would turn a two-minute
+    experiment into an hour.
+
+    Returns an integer array indexing ACTIONS. Review capacity is *not* modelled
+    here: this is the unlimited-review policy, which is the right object for asking
+    how the cost parameters change what the policy *wants* to do.
+    """
+    p = np.clip(np.asarray(p, dtype=np.float64), 0.0, 1.0)
+    a = np.asarray(amt, dtype=np.float64)
+    q = 1.0 - p
+
+    fd = cm.false_decline_margin_rate * a + cm.false_decline_fixed   # cost of a false decline
+    loss = a + cm.chargeback_fixed_fee                               # cost of letting fraud through
+
+    allow = p * loss
+    block = q * fd
+    step = (
+        cm.step_up_fixed_cost
+        + p * (1.0 - cm.step_up_blocks_fraud_rate) * loss
+        + q * cm.step_up_abandon_rate * fd
+    )
+    review = (
+        cm.review_cost
+        + p * (1.0 - cm.review_catches_fraud_rate) * loss
+        + q * (cm.review_delay_cost + (1.0 - cm.review_clears_legit_rate) * fd)
+    )
+
+    # Column order must match ACTIONS.
+    return np.argmin(np.column_stack([allow, step, review, block]), axis=1)
+
+
+def decisions_from_codes(codes: np.ndarray) -> List[Decision]:
+    return [ACTIONS[c] for c in codes]
 
 
 def expected_cost_unlimited(df: pd.DataFrame, cm: CostModel) -> List[Decision]:

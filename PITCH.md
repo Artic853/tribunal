@@ -150,7 +150,8 @@ talk over them. Do not read this verbatim — it is the argument, in order.
 | Latency | 55 µs p50 · 106 µs p99 · 16,904 txns/s |
 | Deleted feature | worth 0.30 PR-AUC, AUC 0.102 — inverted |
 | Sweep | +163% uplift at PR-AUC 0.29 → +3% at 0.96 |
-| Tests | 28 passing |
+| Tests | 35 passing |
+| Sensitivity | ranking holds at all 41 cost settings; review pays below ₹60/case |
 
 ## Likely panel questions
 
@@ -159,6 +160,14 @@ the business pays in rupees. Most of my extra interventions are OTP challenges, 
 declines; total friction inflicted is *lower* than the higher-precision threshold
 policy. I'd rather challenge four good customers than decline one.
 
+**"Your cost model is made up — why should I believe the rupee figures?"** — You
+shouldn't believe the totals, and I say so in the README. I swept all seven
+parameters across plausible ranges, 41 settings: the *ranking* never flips, against
+a threshold baseline I let tune on the test set. The margin ranges from +4% down to
++0.2%, and the floor is the case where step-up only stops half of fraudsters — so if
+you gave me one number from your business to measure first, it'd be OTP
+effectiveness.
+
 **"Your AUC is 0.99 — isn't that suspicious?"** — Yes, and I chased it. It's the
 simulator: fraud is high-amount and concentrated at night. I also found and fixed a
 generator defect that made it worse, deleted a feature that was exploiting an
@@ -166,9 +175,12 @@ artifact, and ran the whole evaluation again across a ladder of deliberately wea
 models. Treat every absolute number as an upper bound; the policy comparisons are
 what the project is about.
 
-**"Why is review never used?"** — With my cost parameters and this model, an
-analyst's ₹120 is never the cheapest action. I report that rather than hiding it.
-The sweep shows it starts admitting cases as model quality drops.
+**"Why is review never used?"** — Because an analyst costs ₹120 and this model is
+accurate enough that the uncertainty isn't worth that. I swept the price: the policy
+wants 5 reviews at ₹60 a case, 44 at ₹30, 155 at ₹10. So it's a capacity-planning
+answer, not a broken component — manual review pays on this traffic below about ₹60.
+It also wakes up when step-up is unreliable: if OTP only stops half of fraudsters,
+it starts asking for 30 human reviews.
 
 **"Where does it fail?"** — 38 frauds worth ₹3,770 get through: small, at familiar
 merchants, in normal hours, inside the cardholder's usual range. Catching them would

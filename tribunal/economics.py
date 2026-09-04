@@ -6,8 +6,11 @@ subject to a fixed number of human analysts and a tolerance for annoying good
 customers. Those are different problems and they rank policies differently.
 
 Every constant below is an assumption, stated in one place so a reviewer can argue
-with it. `eval/sensitivity.py` re-runs the whole evaluation across plausible ranges
-so no conclusion rests on a single guess.
+with it. `eval/sensitivity.py` sweeps each one across a plausible range - 41
+settings over 7 parameters - and re-runs the policy comparison at every point. The
+ranking of policies survives all of them; the rupee totals move by roughly a factor
+of five, which is why this file's numbers should be replaced with measured ones
+before anyone quotes a total.
 
 Currency note: the underlying benchmark is US-shaped and its `amt` column is in USD.
 We treat one amount unit as one rupee throughout. The absolute rupee totals therefore

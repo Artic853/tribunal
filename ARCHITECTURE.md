@@ -162,11 +162,15 @@ scrutinise, because a queue was full, is the worst possible failure mode, and it
 pinned by a test.
 
 **Honest status:** on this benchmark, review is used **zero** times, because the
-model is accurate enough that paying ₹120 for a human opinion is never optimal. The
-machinery is exercised by the uncertainty sweep at lower model quality, where it
-starts admitting cases. I kept it because production models are not this accurate,
-and I am flagging it as currently-unexercised rather than presenting it as a
-contributor.
+model is accurate enough that paying ₹120 for a human opinion is never optimal.
+
+That is a statement about the price, not the machinery, and `eval/sensitivity.py`
+pins where it changes: the policy asks for 5 reviews at ₹60 a case, 44 at ₹30, and
+155 at ₹10. It also starts asking for reviews when the *cheap* intervention becomes
+unreliable — 30 of them if step-up authentication only stops half of fraudsters.
+So the queue is dormant here for a defensible reason, and the sweep says exactly
+what would wake it. I am flagging it as currently-unexercised rather than
+presenting it as a contributor to the headline number.
 
 ---
 
@@ -216,10 +220,12 @@ input.
 ## 8. What I would do differently with more time
 
 - **Measure the cost model instead of assuming it.** Every parameter in
-  `economics.py` should come from the business: real chargeback fees, measured
-  step-up abandonment, actual analyst cost. A sensitivity sweep over plausible
-  ranges is written but not run for want of time; the parameters are the largest
-  source of uncertainty in the headline numbers.
+  `economics.py` is a guess at a real quantity: chargeback fees, step-up
+  abandonment, fully-loaded analyst cost. `eval/sensitivity.py` establishes that the
+  *ranking* survives all 41 settings tested, so the architectural conclusion is
+  safe — but the rupee totals move by a factor of five across that range, and the
+  size of the advantage depends most on step-up effectiveness. Those are the two
+  numbers I would measure first with access to real data.
 - **Drift detection.** The model is trained once and never retrained. Fraud is
   adversarial; a production system needs population-stability monitoring on features
   and scores, and a retraining trigger.

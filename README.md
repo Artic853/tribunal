@@ -91,6 +91,48 @@ where Tribunal's architecture matters least, and it still wins.
 
 ---
 
+## How much of this rests on cost numbers I made up?
+
+Every constant in `tribunal/economics.py` is an assumption. None was measured from
+a real payments business, because I do not have one. That is the biggest weakness
+in the rupee figures above, so rather than caveat it in a sentence I measured it:
+each parameter swept across a plausible range while the others hold, **41 settings
+across 7 parameters**, re-running both policies at every point.
+
+The fixed-threshold baseline is given an unfair advantage throughout — its cutoff
+is tuned on the very window it is scored on. If the expected-cost policy still
+wins, tuning cannot explain it.
+
+![Sensitivity](reports/sensitivity.png)
+
+**The ranking never flips.** The expected-cost policy wins at all 41 settings. The
+margin ranges from **+3.97%** (when a false decline costs ₹1,000 in fixed
+relationship damage) down to **+0.17%** — that floor is the case where step-up
+authentication only stops half of fraudsters, which strips the policy of the
+friction ladder that is most of its advantage. So the conclusion is robust, but its
+*size* depends most on how well your OTP challenge actually works, which is a thing
+a real business can measure.
+
+**And it answers the awkward question.** The review queue sits unused not because
+the machinery is broken but because an analyst costs more than the uncertainty is
+worth. Sweeping that cost gives a capacity-planning answer rather than an excuse:
+
+| Fully-loaded cost per review | Cases the policy wants reviewed |
+|---:|---:|
+| ₹10 | 155 |
+| ₹30 | 44 |
+| ₹60 | 5 |
+| **₹120 (assumed)** | **0** |
+| ₹250 | 0 |
+
+Manual review pays for itself on this traffic only below roughly **₹60 a case**.
+Review also becomes attractive when step-up is unreliable — if OTP challenges only
+stop 50% of fraud, the policy starts asking for 30 human reviews, because the cheap
+intervention is no longer trustworthy. Both are the system correctly declining to
+spend money it cannot justify.
+
+---
+
 ## Things I found that I did not want to find
 
 This section exists because a result with no failures in it has not been looked at
@@ -186,8 +228,8 @@ regression test.
   over-intervening in exactly the ambiguous range.
 - **The absolute rupee figures are not a forecast.** They follow from a cost model
   whose parameters are stated assumptions (`tribunal/economics.py`), and from a
-  simulated dataset. The *ranking* of policies is robust to those assumptions; the
-  totals are not.
+  simulated dataset. The *ranking* of policies survives all 41 settings tested
+  above; the totals move a lot and should not be quoted as a projection.
 
 ![Calibration](reports/calibration.png)
 
@@ -320,6 +362,7 @@ python eval/run_eval.py                    # ~90 s    the headline table
 python eval/uncertainty_sweep.py           # ~4 min
 python eval/leakage_ablation.py            # ~4 min
 python eval/importance.py                  # ~3 min
+python eval/sensitivity.py                 # ~40 s     41 cost settings
 python scripts/make_charts.py
 
 pytest tests/ -q                           # 28 tests
@@ -387,9 +430,9 @@ tribunal/
   audit.py         hash-chained append-only log
   tools/           the six checks + the model, behind one Evidence interface
 eval/              policies, headline eval, model-quality sweep,
-                   leakage ablation, permutation importance
+                   leakage ablation, permutation importance, cost sensitivity
 scripts/           data generation, feature build, training, demo run, charts
 api/               FastAPI decision service
-tests/             28 tests
+tests/             35 tests
 reports/           generated metrics and figures
 ```

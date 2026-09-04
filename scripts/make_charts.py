@@ -187,8 +187,73 @@ def fig_calibration(out):
     plt.close(fig)
 
 
+def fig_sensitivity(out):
+    d = json.load(open("reports/sensitivity.json"))
+    sweeps = d["sweeps"]
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.4, 4.8),
+                                   gridspec_kw={"width_ratios": [1.45, 1]})
+
+    # Left: uplift of the expected-cost policy over an oracle-tuned threshold, at
+    # every parameter setting tested. The message is that it never crosses zero.
+    names = list(sweeps.keys())
+    for i, param in enumerate(names):
+        rows = [r for r in sweeps[param] if r["uplift_pct"] is not None]
+        ys = [i] * len(rows)
+        xs = [r["uplift_pct"] for r in rows]
+        ax1.scatter(xs, ys, s=54, color=BLUE, zorder=3, alpha=0.85,
+                    edgecolors=SURFACE, linewidths=1.4)
+        dflt = [r for r in rows if r["is_default"]]
+        if dflt:
+            ax1.scatter([dflt[0]["uplift_pct"]], [i], s=150, facecolors="none",
+                        edgecolors=ORANGE, linewidths=2.2, zorder=4)
+
+    ax1.axvline(0, color=CRITICAL, lw=1.6, zorder=2)
+    ax1.set_yticks(range(len(names)))
+    ax1.set_yticklabels([n.replace("_", " ") for n in names], fontsize=9)
+    ax1.set_xlabel("Expected-cost policy vs best fixed threshold (%)")
+    ax1.set_title("The ranking does not depend on my assumptions\n"
+                  f"{sum(len(v) for v in sweeps.values())} cost settings; "
+                  "orange ring = shipped default", loc="left")
+    ax1.set_xlim(-1.2, max(r["uplift_pct"] for v in sweeps.values()
+                           for r in v if r["uplift_pct"] is not None) * 1.18)
+    ax1.invert_yaxis()
+    ax1.annotate("a threshold would win\nanywhere left of this line",
+                 xy=(-0.08, -0.42), fontsize=8.5, color=CRITICAL,
+                 ha="right", va="center")
+    ax1.grid(axis="x", color=GRID, lw=0.8)
+    ax1.set_axisbelow(True)
+
+    # Right: the capacity-planning answer.
+    rc = sweeps["review_cost"]
+    xs = [r["value"] for r in rc]
+    ys = [r["reviews_wanted"] for r in rc]
+    ax2.plot(xs, ys, "-o", color=BLUE, lw=2, ms=9, zorder=3)
+    for x, y in zip(xs, ys):
+        ax2.annotate(f"{y}", (x, y), textcoords="offset points", xytext=(0, 11),
+                     ha="center", fontsize=9, color=INK, fontweight="bold")
+    dflt = next(r for r in rc if r["is_default"])
+    ax2.scatter([dflt["value"]], [dflt["reviews_wanted"]], s=170, facecolors="none",
+                edgecolors=ORANGE, linewidths=2.2, zorder=4)
+    ax2.set_xscale("log")
+    ax2.set_xticks(xs)
+    ax2.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax2.set_xlabel("Fully-loaded cost of one manual review (₹)")
+    ax2.set_ylabel("Cases the policy wants reviewed")
+    ax2.set_title("When is an analyst worth it?\n"
+                  "Below about ₹60 a case, and not above it", loc="left")
+    ax2.set_ylim(-8, max(ys) * 1.3)
+    ax2.grid(color=GRID, lw=0.8)
+    ax2.set_axisbelow(True)
+
+    fig.tight_layout()
+    fig.savefig(out, dpi=160)
+    plt.close(fig)
+
+
 def main():
     os.makedirs("reports", exist_ok=True)
+    fig_sensitivity("reports/sensitivity.png")
     fig_policies("reports/policy_comparison.png")
     fig_sweep("reports/model_quality_sweep.png")
     fig_importance("reports/feature_importance.png")

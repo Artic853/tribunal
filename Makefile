@@ -20,6 +20,7 @@ eval:
 	python eval/uncertainty_sweep.py
 	python eval/leakage_ablation.py
 	python eval/importance.py
+	python eval/sensitivity.py
 
 charts:
 	python scripts/make_charts.py
