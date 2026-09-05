@@ -13,3 +13,7 @@ artifacts/*.pkl
 artifacts/*.jsonl
 
 # Keep reports/ committed - the figures and metrics are part of the submission.
+
+# Build artefacts from the site preview
+site/_preview.html
+site/shot_*.png

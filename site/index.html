@@ -1,0 +1,1051 @@
+<title>Tribunal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600;700&display=swap">
+
+<style>
+:root{
+  color-scheme: light;
+  --paper:#E8EAED;
+  --surface:#F6F7F9;
+  --surface-2:#EDEFF3;
+  --ink:#12161C;
+  --ink-2:#525A65;
+  --ink-3:#7B848F;
+  --rule:#CBD1D8;
+  --rule-soft:#DCE0E6;
+  --accent:#9B2C2C;
+  --accent-soft:#F0DEDE;
+  --s1:#2a78d6;
+  --s2:#eb6834;
+  --good:#0ca30c;
+  --crit:#C1352F;
+  --shadow:0 1px 2px rgba(18,22,28,.06), 0 8px 24px -16px rgba(18,22,28,.28);
+
+  --serif:"IBM Plex Serif", Georgia, "Times New Roman", serif;
+  --sans:"IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  --measure: 68ch;
+  --wide: 1080px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --paper:#0E1116;
+    --surface:#171B21;
+    --surface-2:#1D222A;
+    --ink:#E6EAEF;
+    --ink-2:#98A2AE;
+    --ink-3:#6C7683;
+    --rule:#272E37;
+    --rule-soft:#20262E;
+    --accent:#E0736B;
+    --accent-soft:#2A1B1B;
+    --s1:#3987e5;
+    --s2:#d95926;
+    --good:#3FB63F;
+    --crit:#E06A62;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --paper:#0E1116;
+  --surface:#171B21;
+  --surface-2:#1D222A;
+  --ink:#E6EAEF;
+  --ink-2:#98A2AE;
+  --ink-3:#6C7683;
+  --rule:#272E37;
+  --rule-soft:#20262E;
+  --accent:#E0736B;
+  --accent-soft:#2A1B1B;
+  --s1:#3987e5;
+  --s2:#d95926;
+  --good:#3FB63F;
+  --crit:#E06A62;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 8px 24px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:16px;
+  line-height:1.62;
+  -webkit-font-smoothing:antialiased;
+}
+.page{max-width:var(--wide);margin:0 auto;padding:0 28px 96px}
+.col{max-width:var(--measure)}
+
+h1,h2,h3{font-family:var(--serif);text-wrap:balance;margin:0}
+h2{font-size:1.72rem;line-height:1.22;font-weight:600;letter-spacing:-.012em}
+h3{font-size:1.12rem;line-height:1.34;font-weight:600}
+p{margin:0}
+a{color:var(--ink);text-decoration-color:var(--ink-3);text-underline-offset:3px}
+a:hover{text-decoration-color:var(--accent)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:2px}
+strong{font-weight:600}
+.num{font-variant-numeric:tabular-nums}
+
+/* ---------- masthead ---------- */
+.masthead{padding:64px 0 40px}
+.wordmark{
+  font-family:var(--serif);font-weight:700;font-size:clamp(3rem,9vw,5.2rem);
+  line-height:.95;letter-spacing:-.03em;margin:0;
+}
+.wordmark .dot{color:var(--accent)}
+.tagline{
+  font-family:var(--serif);font-weight:500;font-style:italic;
+  font-size:clamp(1.12rem,2.6vw,1.42rem);color:var(--ink-2);
+  margin-top:18px;max-width:34ch;line-height:1.4;
+}
+.standfirst{margin-top:24px;max-width:60ch;color:var(--ink-2);font-size:1.02rem}
+.dockets{
+  display:flex;flex-wrap:wrap;gap:8px 10px;margin-top:28px;
+  font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;
+}
+.docket{
+  border:1px solid var(--rule);color:var(--ink-2);
+  padding:5px 10px;border-radius:2px;background:var(--surface);
+}
+/* Values keep their own casing: uppercasing "55 µs" renders a capital mu that
+   reads as "55 MS" — off by a factor of a thousand. */
+.docket b{color:var(--ink);font-weight:500;text-transform:none;letter-spacing:.02em}
+
+/* ---------- hash rule (subject motif) ---------- */
+.hashrule{
+  display:flex;align-items:center;gap:14px;margin:0;
+  font-family:var(--mono);font-size:.66rem;color:var(--ink-3);
+  letter-spacing:.04em;overflow:hidden;white-space:nowrap;
+}
+.hashrule::before{content:"";flex:0 0 34px;height:1px;background:var(--accent)}
+.hashrule::after{content:"";flex:1;height:1px;background:var(--rule)}
+
+section{padding:52px 0 0}
+section > .hashrule{margin-bottom:34px}
+.eyebrow{
+  font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px;
+}
+.lede{margin-top:16px;color:var(--ink-2)}
+.body{margin-top:16px}
+.body + .body{margin-top:14px}
+
+/* ---------- verdict stats ---------- */
+.verdict{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(168px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  margin-top:36px;
+}
+.vcell{background:var(--surface);padding:20px 18px}
+.vnum{
+  font-family:var(--serif);font-weight:600;font-size:1.86rem;line-height:1.08;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;
+}
+.vnum.pos{color:var(--good)}
+.vnum.neg{color:var(--crit)}
+.vlab{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--ink-3);margin-top:9px;line-height:1.4;
+}
+
+/* ---------- tables ---------- */
+.tablewrap{overflow-x:auto;margin-top:28px;border:1px solid var(--rule);background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
+th,td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--rule-soft);white-space:nowrap}
+th:first-child,td:first-child{text-align:left;white-space:normal}
+thead th{
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;border-bottom:1px solid var(--rule);
+}
+tbody tr:last-child td{border-bottom:none}
+td.n{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.86rem}
+tr.hero td{background:var(--surface-2);font-weight:600}
+tr.hero td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.neg{color:var(--crit)}
+.pos{color:var(--good)}
+
+/* ---------- charts ---------- */
+figure{margin:32px 0 0;background:var(--surface);border:1px solid var(--rule);padding:22px 20px 16px}
+figure.wide{max-width:none}
+.figtitle{font-family:var(--serif);font-weight:600;font-size:1.02rem;line-height:1.3}
+.figsub{font-size:.86rem;color:var(--ink-2);margin-top:5px;max-width:62ch}
+.chart{margin-top:20px;width:100%}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:14px;font-size:.8rem;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:11px;height:11px;border-radius:2px;flex:0 0 auto}
+figcaption{margin-top:14px;font-size:.82rem;color:var(--ink-3);max-width:64ch;line-height:1.5}
+
+.tip{
+  position:fixed;pointer-events:none;z-index:50;opacity:0;transition:opacity .1s;
+  background:var(--ink);color:var(--paper);font-family:var(--mono);font-size:.72rem;
+  padding:7px 9px;border-radius:3px;line-height:1.45;max-width:250px;box-shadow:var(--shadow);
+}
+.tip.on{opacity:1}
+
+/* ---------- callout ---------- */
+.callout{
+  margin-top:32px;border-left:3px solid var(--accent);background:var(--surface);
+  padding:22px 24px;
+}
+.callout .big{
+  font-family:var(--serif);font-size:1.3rem;line-height:1.35;font-weight:500;
+  letter-spacing:-.008em;
+}
+.callout p:not(.big){margin-top:12px;color:var(--ink-2);font-size:.95rem}
+
+/* ---------- findings ---------- */
+.findings{margin-top:32px;display:flex;flex-direction:column;gap:1px;background:var(--rule);border:1px solid var(--rule)}
+.finding{background:var(--surface);padding:22px 24px}
+.fhead{display:flex;gap:14px;align-items:baseline}
+.fnum{
+  font-family:var(--mono);font-size:.74rem;color:var(--accent);font-weight:500;
+  flex:0 0 auto;padding-top:2px;
+}
+.finding h3{margin:0}
+.finding p{margin-top:10px;color:var(--ink-2);font-size:.93rem;max-width:64ch}
+.finding .metric{
+  margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;
+  font-family:var(--mono);font-size:.74rem;
+}
+.chip{
+  border:1px solid var(--rule);background:var(--surface-2);color:var(--ink-2);
+  padding:4px 9px;border-radius:2px;
+}
+.chip b{color:var(--ink);font-weight:500}
+
+/* ---------- pipeline ---------- */
+.pipe{margin-top:30px;display:flex;flex-direction:column;gap:0;border:1px solid var(--rule);background:var(--surface)}
+.step{display:grid;grid-template-columns:132px 1fr;gap:20px;padding:16px 22px;border-bottom:1px solid var(--rule-soft);align-items:baseline}
+.step:last-child{border-bottom:none}
+.step .k{
+  font-family:var(--mono);font-size:.74rem;color:var(--accent);letter-spacing:.03em;
+}
+.step .v{font-size:.92rem;color:var(--ink-2)}
+.step .v b{color:var(--ink);font-weight:500}
+.step.out{background:var(--surface-2)}
+
+/* ---------- code / memo ---------- */
+.slab{
+  margin-top:28px;background:var(--surface);border:1px solid var(--rule);
+  font-family:var(--mono);font-size:.79rem;line-height:1.62;overflow-x:auto;
+}
+.slabhead{
+  padding:10px 16px;border-bottom:1px solid var(--rule);color:var(--ink-3);
+  font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.slabbody{padding:16px;white-space:pre;color:var(--ink-2)}
+.slabbody .hl{color:var(--ink);font-weight:500}
+.slabbody .ac{color:var(--accent)}
+.slabbody .mut{color:var(--ink-3)}
+
+.chain{margin-top:22px;display:flex;flex-direction:column;gap:0}
+.link{
+  display:grid;grid-template-columns:64px 1fr;gap:14px;align-items:center;
+  font-family:var(--mono);font-size:.74rem;padding:9px 0;border-bottom:1px dashed var(--rule);
+}
+.link:last-child{border-bottom:none}
+.link .seq{color:var(--ink-3)}
+.link .h{color:var(--ink-2);overflow:hidden;text-overflow:ellipsis}
+.link .h b{color:var(--accent);font-weight:500}
+.link.broken .h{color:var(--crit)}
+
+/* ---------- limits ---------- */
+.limits{margin-top:26px;display:flex;flex-direction:column;gap:16px}
+.limit{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline}
+.limit .mark{font-family:var(--mono);font-size:.8rem;color:var(--accent)}
+.limit p{font-size:.94rem;color:var(--ink-2);max-width:62ch}
+.limit b{color:var(--ink);font-weight:500}
+
+/* ---------- footer ---------- */
+footer{margin-top:72px;border-top:1px solid var(--rule);padding-top:30px}
+.runcmds{
+  font-family:var(--mono);font-size:.78rem;color:var(--ink-2);
+  background:var(--surface);border:1px solid var(--rule);padding:16px;
+  white-space:pre;overflow-x:auto;margin-top:18px;line-height:1.7;
+}
+.runcmds .c{color:var(--ink-3)}
+.sig{margin-top:26px;font-size:.84rem;color:var(--ink-3);display:flex;flex-wrap:wrap;gap:6px 18px}
+
+@media (max-width:640px){
+  .page{padding:0 20px 72px}
+  .masthead{padding:44px 0 32px}
+  .step{grid-template-columns:1fr;gap:6px}
+  .link{grid-template-columns:52px 1fr}
+  h2{font-size:1.46rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<div class="page">
+
+<header class="masthead">
+  <h1 class="wordmark">Tribunal<span class="dot">.</span></h1>
+  <p class="tagline">Every decline gets a reason.<br>Every reason gets a receipt.</p>
+  <p class="standfirst">
+    A fraud triage system that prices four actions in rupees and picks the cheapest —
+    instead of thresholding a score. It writes down what it saw, what it decided, and
+    what it deliberately ignored, into a log that cannot be quietly edited afterwards.
+  </p>
+  <div class="dockets">
+    <span class="docket">Razorpay Buildathon · <b>AI Risk Manager</b></span>
+    <span class="docket">Held out · <b>160,139 txns / 92 days</b></span>
+    <span class="docket">Decision · <b>55 µs p50</b></span>
+    <span class="docket">Tests · <b>35 passing</b></span>
+  </div>
+</header>
+
+<div class="verdict">
+  <div class="vcell">
+    <div class="vnum pos num">₹1,040,422</div>
+    <div class="vlab">Net saved vs approving everything</div>
+  </div>
+  <div class="vcell">
+    <div class="vnum num">99.3%</div>
+    <div class="vlab">Of fraud value stopped</div>
+  </div>
+  <div class="vcell">
+    <div class="vnum num">365</div>
+    <div class="vlab">Good customers touched, of 159,084</div>
+  </div>
+  <div class="vcell">
+    <div class="vnum neg num">−₹156,541</div>
+    <div class="vlab">What hand-written rules lose</div>
+  </div>
+</div>
+
+<section>
+  <p class="hashrule">e13b21d1d7afb23d · chain head · 1,699 records</p>
+  <div class="col">
+    <p class="eyebrow">The problem</p>
+    <h2>A score is not a decision</h2>
+    <p class="lede">
+      Most fraud projects stop at a classifier: a score, a threshold, an AUC. Real risk
+      teams do not have that problem. They have four the classifier never touches.
+    </p>
+  </div>
+
+  <div class="findings" style="margin-top:28px">
+    <div class="finding">
+      <div class="fhead"><span class="fnum">01</span><h3>The right threshold depends on the amount</h3></div>
+      <p>Declining a ₹200 transaction and declining a ₹90,000 transaction at the same score
+      are not the same bet. One cutoff cannot express both.</p>
+    </div>
+    <div class="finding">
+      <div class="fhead"><span class="fnum">02</span><h3>Blocking good customers costs money too</h3></div>
+      <p>And it never appears in a precision number. A policy can improve recall and destroy
+      the business at the same time.</p>
+    </div>
+    <div class="finding">
+      <div class="fhead"><span class="fnum">03</span><h3>Manual review is a fixed number of people</h3></div>
+      <p>Not an unbounded bucket. A policy that sends 4% of traffic to a queue that holds
+      0.1% is not a policy.</p>
+    </div>
+    <div class="finding">
+      <div class="fhead"><span class="fnum">04</span><h3>Somebody will ask why, later</h3></div>
+      <p>A merchant, a cardholder, a regulator. “The model said 0.83” is not an answer to
+      any of them.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="hashrule">c04070d065d2e70c · verdict · held-out window</p>
+  <div class="col">
+    <p class="eyebrow">Result</p>
+    <h2>What each policy is actually worth</h2>
+    <p class="lede">
+      160,139 transactions over 92 days, containing 1,055 frauds worth ₹560,519. The model
+      never saw this window; neither did any feature.
+    </p>
+  </div>
+
+  <div class="tablewrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Policy</th><th>Net saved</th><th>Fraud stopped</th>
+          <th>Good customers hit</th><th>Friction inflicted</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Approve everything</td><td class="n">₹0</td><td class="n">0%</td><td class="n">0</td><td class="n">₹0</td></tr>
+        <tr><td>Hand-written rules</td><td class="n neg">−₹156,541</td><td class="n">81.2%</td><td class="n">3,607</td><td class="n">₹836,913</td></tr>
+        <tr><td>Model, block at p ≥ 0.5</td><td class="n">₹1,014,614</td><td class="n">97.1%</td><td class="n">63</td><td class="n">₹20,810</td></tr>
+        <tr class="hero"><td>Tribunal</td><td class="n pos">₹1,040,422</td><td class="n">99.3%</td><td class="n">365</td><td class="n">₹16,844</td></tr>
+        <tr><td>Decline everything</td><td class="n neg">−₹40,330,808</td><td class="n">100%</td><td class="n">159,084</td><td class="n">₹41.4M</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <figure class="wide">
+    <div class="figtitle">Net rupees saved over 92 days</div>
+    <div class="figsub">Measured against approving every transaction. Anything below the line
+    is worse than doing nothing at all.</div>
+    <div class="chart" id="c-policy"></div>
+    <figcaption>Excludes “decline everything” (−₹40.3M), which would flatten every other bar.</figcaption>
+  </figure>
+
+  <div class="callout col">
+    <p class="big">Tribunal touches 5.8× more good customers than a blocking threshold —
+    and inflicts 19% <em>less</em> friction on them.</p>
+    <p>₹16,844 against ₹20,810. That is the whole argument for the design in one row: it is
+    not choosing <em>whether</em> to intervene, it is choosing <em>how</em>. Most of the extra
+    interventions are a one-time passcode, not a decline — cheap for a real customer, and
+    useless to a fraudster who does not have the phone. Precision falls to 0.74 from 0.94,
+    and that is the correct trade, because precision counts interventions and the business
+    pays in rupees.</p>
+  </div>
+</section>
+
+<section>
+  <p class="hashrule">a7f21c9e04bb31da · ablation · model quality ladder</p>
+  <div class="col">
+    <p class="eyebrow">Is the complexity justified?</p>
+    <h2>Partly — and here is exactly where</h2>
+    <p class="lede">
+      The honest answer on this benchmark: the expected-cost policy beats a plain threshold
+      by 2.5%, and the review queue is never used. The model is accurate enough (PR-AUC 0.968)
+      that almost every transaction is obviously fine or obviously fraud.
+    </p>
+    <p class="body">
+      That is a fact about the simulator, not about fraud. So the decision layer was measured
+      against a ladder of deliberately weaker models — restricted feature sets, each honestly
+      recalibrated — to find where it starts to matter.
+    </p>
+  </div>
+
+  <figure class="wide">
+    <div class="figtitle">The decision layer matters most when the model is weakest</div>
+    <div class="figsub">Each point is a model built on a restricted feature set. Labels show
+    how much more the expected-cost policy saves than the best fixed threshold.</div>
+    <div class="chart" id="c-sweep"></div>
+    <div class="legend">
+      <span class="key"><span class="swatch" style="background:var(--s1)"></span>Expected-cost policy</span>
+      <span class="key"><span class="swatch" style="background:var(--s2)"></span>Best fixed threshold</span>
+    </div>
+    <figcaption>Production card-fraud models do not operate at 0.96. This benchmark is the
+    regime where the architecture matters least, and it still wins.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="hashrule">5c26baf1e433ad47 · sensitivity · 41 cost settings</p>
+  <div class="col">
+    <p class="eyebrow">Robustness</p>
+    <h2>How much of this rests on cost numbers I made up?</h2>
+    <p class="lede">
+      Every constant in the cost model is an assumption — none measured from a real payments
+      business. So rather than caveat it in a sentence, each parameter was swept across a
+      plausible range while the others hold: 41 settings over 7 parameters, both policies
+      re-run at every point.
+    </p>
+    <p class="body">
+      The threshold baseline is handicapped in its own favour throughout — its cutoff is
+      tuned on the very window it is scored on. <strong>The ranking never flips.</strong> The
+      expected-cost policy wins at all 41 settings, by between +0.17% and +3.97%. That floor
+      is the case where a passcode challenge stops only half of fraudsters, which strips away
+      the friction ladder that is most of the advantage.
+    </p>
+  </div>
+
+  <figure class="wide">
+    <div class="figtitle">When is a human analyst worth paying for?</div>
+    <div class="figsub">Cases the policy chooses to send to manual review, as the fully-loaded
+    cost of one review changes. Everything else held at its assumed value.</div>
+    <div class="chart" id="c-review"></div>
+    <figcaption>Manual review pays for itself on this traffic only below roughly ₹60 a case.
+    The queue sits idle at the assumed ₹120 not because the machinery is broken, but because
+    the system correctly declines to spend money it cannot justify.</figcaption>
+  </figure>
+</section>
+
+<section>
+  <p class="hashrule">cb6d3dbf5fb3d9ad · findings · what went wrong</p>
+  <div class="col">
+    <p class="eyebrow">Failures</p>
+    <h2>Things I found that I did not want to find</h2>
+    <p class="lede">
+      This section exists because a result with no failures in it has not been looked at hard
+      enough. Every number below is reproducible from the repository.
+    </p>
+  </div>
+
+  <div class="findings">
+    <div class="finding">
+      <div class="fhead"><span class="fnum">01</span>
+      <h3>My second most important feature had learned the opposite of reality</h3></div>
+      <p>Permutation importance ranked the card’s own prior confirmed-fraud rate second, worth
+      0.30 PR-AUC. Then I checked its direction: cards in the top three quintiles of prior
+      fraud contain <strong>exactly zero</strong> subsequent fraud. In this simulator a card is
+      defrauded at most once, so “has been defrauded before” means “is now safe.” In production
+      the opposite holds — that is a reissued card belonging to a targeted customer.</p>
+      <p>I deleted it. Shipping a model that under-protects the customers who have already been
+      harmed once is not a trade worth 0.021 PR-AUC.</p>
+      <div class="metric">
+        <span class="chip">single-feature ROC-AUC <b>0.102</b></span>
+        <span class="chip">cost of removal <b>0.021 PR-AUC</b></span>
+        <span class="chip">and <b>₹21,553</b></span>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><span class="fnum">02</span>
+      <h3>Geolocation is noise here, so it does not get a vote</h3></div>
+      <p>Impossible-travel detection is one of the strongest signals in real card-present fraud,
+      and it is built. Then it was measured: distance from the cardholder’s home region scores
+      ROC-AUC 0.494 against the label — a coin flip. The simulator draws merchant coordinates
+      from a fixed radius around each customer, independently of fraud.</p>
+      <p>The check still runs and still reports what it sees. It is barred from escalating a
+      decision, with the measurement recorded in the code beside the flag.</p>
+      <div class="metric">
+        <span class="chip">distance ROC-AUC <b>0.494</b></span>
+        <span class="chip">median implied speed <b>4,011 km/h legit vs 3,462 fraud</b></span>
+      </div>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><span class="fnum">03</span>
+      <h3>The escalation rules add nothing</h3></div>
+      <p>Deterministic escalation rules were built on top of the cost model, then measured. On
+      this benchmark they change the outcome by exactly ₹0 — the cost model already reaches the
+      same decisions. They are kept because the ladder above shows they matter at lower model
+      quality, but “we added rules and they helped” would have been a claim, not a finding. The
+      evaluation reports the system with and without them, side by side.</p>
+      <div class="metric"><span class="chip">contribution <b>₹0</b></span></div>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><span class="fnum">04</span>
+      <h3>A dataset defect that would have invalidated everything</h3></div>
+      <p>The first dataset came from the simulator’s current release. Its parallelised generator
+      walks spend categories sequentially through the simulated calendar instead of sampling per
+      transaction, so every customer transacts in the same category at the same time:
+      <span class="chip" style="display:inline">gas_transport</span> appeared only in Jan–Apr 2023,
+      <span class="chip" style="display:inline">travel</span> only in Jun 2024. In the training
+      window, <strong>personal_care contained 137 transactions of which 137 were fraud</strong>.</p>
+      <p>Under a temporal split that makes the category field a proxy for “which month is this”,
+      and everything downstream becomes meaningless. The dataset was regenerated from an older
+      branch that does not have the defect — category shares are now flat at ~1/14 in every month.</p>
+    </div>
+
+    <div class="finding">
+      <div class="fhead"><span class="fnum">05</span>
+      <h3>A timestamp bug that made the model look <em>better</em></h3></div>
+      <p>Features were built by dividing a pandas datetime by 10⁹. Pandas 3 stores datetimes at
+      microsecond resolution, so that quietly compressed 18 months of history into 47 seconds:
+      every velocity window covered the entire dataset, and the 24-hour and 7-day counts were
+      identical on every row.</p>
+      <p>The AUC went <em>up</em>. Nothing alerted, because leaks always flatter you. I found it
+      plotting feature distributions and noticing two columns were the same. There is a
+      regression test for it now.</p>
+      <div class="metric">
+        <span class="chip">18 months collapsed to <b>47 seconds</b></span>
+        <span class="chip">caught by <b>eyeballing distributions</b></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <p class="hashrule">6865386dd73bb4c3 · architecture · the decision path</p>
+  <div class="col">
+    <p class="eyebrow">How it works</p>
+    <h2>Six checks, a calibrated probability, and an argmin over four prices</h2>
+    <p class="lede">
+      One transaction enters. Everything below happens before the authorisation returns.
+    </p>
+  </div>
+
+  <div class="pipe">
+    <div class="step"><span class="k">features</span>
+      <span class="v"><b>29 point-in-time features.</b> State is built by streaming in timestamp
+      order, so a transaction can only ever see its own past. Label-derived features are held
+      back seven days, because at authorisation nobody knows yet whether a charge will be
+      disputed.</span></div>
+    <div class="step"><span class="k">evidence</span>
+      <span class="v"><b>Six deterministic checks</b> — velocity, geolocation, spend profile,
+      merchant risk, novelty, time of day. Each returns what it looked at, whether it fired, and
+      one sentence a person can read. Not a score folded into a total.</span></div>
+    <div class="step"><span class="k">probability</span>
+      <span class="v"><b>Gradient-boosted trees, isotonically calibrated.</b> No class reweighting:
+      the policy multiplies this number by rupees, so it has to be a real probability rather than
+      a ranking.</span></div>
+    <div class="step"><span class="k">policy</span>
+      <span class="v"><b>Expected cost of four actions</b> — approve, challenge, hold for review,
+      decline — and take the cheapest, subject to how many analysts exist today.</span></div>
+    <div class="step"><span class="k">memo</span>
+      <span class="v"><b>A case note written from the evidence that fired</b>, in the order that
+      mattered. Not reverse-engineered from an attribution plot afterwards.</span></div>
+    <div class="step out"><span class="k">audit</span>
+      <span class="v"><b>Appended to a hash chain.</b> Card numbers masked. Every intervention
+      logged, plus a sample of approvals — because auditing what you let through matters too.</span></div>
+  </div>
+
+  <div class="col" style="margin-top:34px">
+    <h3>There is no language model in this loop</h3>
+    <p class="body">That is a choice, not a gap. This code sits in the authorisation path of a
+    payment: it decides in 55 microseconds, where an LLM call is three orders of magnitude
+    slower. It is reproducible, which is the only thing that makes an audit trail worth having.
+    And merchant names are attacker-controlled text — feeding them to a model that decides
+    whether to approve the attacker’s payment is a prompt-injection vector with a direct payout.</p>
+    <p class="body">The language model earns its place where a human would otherwise be writing
+    prose: the case note for the roughly 0.1% of transactions that reach an analyst. Off the hot
+    path, with a template fallback, because a memo service outage must never affect a payment
+    decision.</p>
+  </div>
+</section>
+
+<section>
+  <p class="hashrule">e1eb302d7f65afbb · receipt · a real decision</p>
+  <div class="col">
+    <p class="eyebrow">The receipt</p>
+    <h2>What a decline actually looks like</h2>
+    <p class="lede">
+      Verbatim from the audit log — not an illustration. Note the last line: “we looked and
+      found nothing” and “we never looked” are different answers to a regulator, so both are
+      recorded.
+    </p>
+  </div>
+
+  <div class="slab">
+    <div class="slabhead"><span>case memo · seq 13</span><span>card ****2297</span></div>
+    <div class="slabbody"><span class="hl">Declined: 847 at Mohr-Bayer (shopping_net).</span>
+Model probability of fraud 100.00%. Expected cost of this action 0,
+versus 1,347 if approved outright.
+
+<span class="ac">Evidence:</span>
+  - [spend_profile] Amount 847 is 15.0x this card's average
+    and 12.9 standard deviations above it.
+  - [model] Model puts fraud probability at 100.00% — top 0.01%
+    of scored traffic.
+  - [novelty] First-time merchant never used by this card.
+
+<span class="mut">Checks that did not fire: velocity, geo, merchant_risk, temporal.</span></div>
+  </div>
+
+  <div class="col" style="margin-top:30px">
+    <h3>And why it cannot be quietly rewritten</h3>
+    <p class="body">Each record carries the SHA-256 of the one before it. Editing or deleting any
+    past decision breaks every hash after it, and verification reports the exact index where the
+    chain first fails.</p>
+  </div>
+
+  <div class="chain col">
+    <div class="link"><span class="seq">seq 11</span><span class="h">…9c2f4b1a <b>→</b> c91aae8cbc808278</span></div>
+    <div class="link"><span class="seq">seq 12</span><span class="h">c91aae8cbc808278 <b>→</b> c04070d065d2e70c</span></div>
+    <div class="link"><span class="seq">seq 13</span><span class="h">c04070d065d2e70c <b>→</b> 736a1c69bd50f74f</span></div>
+    <div class="link"><span class="seq">seq 14</span><span class="h">736a1c69bd50f74f <b>→</b> cb6d3dbf5fb3d9ad</span></div>
+  </div>
+
+  <div class="slab col">
+    <div class="slabhead"><span>verification</span><span>1,699 records</span></div>
+    <div class="slabbody"><span class="mut">$</span> python -c "from tribunal.audit import verify; print(verify(...))"
+<span class="hl">(True, None, 'chain intact across 1,699 records, head e13b21d1d7afb23d')</span></div>
+  </div>
+
+  <p class="col" style="margin-top:18px;font-size:.9rem;color:var(--ink-3)">
+    This is tamper-<em>evident</em>, not tamper-proof — anyone who can rewrite the whole file can
+    recompute the chain. Fixing that needs an external anchor, and publishing the head hash
+    somewhere you do not control is the cheap version. What it does prevent is the failure mode
+    that actually happens: a decision changed in place after someone asks about it.
+  </p>
+</section>
+
+<section>
+  <p class="hashrule">eeeebc5673247d72 · performance · measured, not estimated</p>
+  <div class="col">
+    <p class="eyebrow">Performance</p>
+    <h2>Fast enough to run on all of it</h2>
+  </div>
+
+  <div class="tablewrap col">
+    <table style="min-width:420px">
+      <tbody>
+        <tr><td>Transactions processed end-to-end</td><td class="n">917,792</td></tr>
+        <tr><td>Wall clock</td><td class="n">54.3 s</td></tr>
+        <tr><td>Throughput</td><td class="n">16,904 / s</td></tr>
+        <tr><td>Decision latency — p50</td><td class="n">55 µs</td></tr>
+        <tr><td>Decision latency — p99</td><td class="n">106 µs</td></tr>
+        <tr><td>Including one-row model inference — p50</td><td class="n">7.9 ms</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <p class="col body" style="margin-top:18px;font-size:.94rem;color:var(--ink-2)">
+    That last row is honest rather than flattering, and worth explaining instead of hiding:
+    scoring a single row through scikit-learn carries a fixed per-call overhead that dominates
+    everything else. A real deployment amortises it with batching or a compiled model server —
+    the system’s own work is the 55 µs. Reporting only the fast number would be dishonest;
+    reporting only the slow one would misattribute where the cost sits.
+  </p>
+
+  <figure class="wide">
+    <div class="figtitle">What the model actually uses</div>
+    <div class="figsub">Permutation importance on the held-out window — how much precision is
+    lost when each feature is replaced by noise. Not split gain, which rewards features that
+    were merely convenient to split on.</div>
+    <div class="chart" id="c-imp"></div>
+  </figure>
+</section>
+
+<section>
+  <p class="hashrule">b968821afb9203a1 · limits · where it fails</p>
+  <div class="col">
+    <p class="eyebrow">Limits</p>
+    <h2>Where it still fails</h2>
+  </div>
+
+  <div class="limits col">
+    <div class="limit"><span class="mark">→</span>
+      <p><b>38 frauds worth ₹3,770 get through</b> — 3.6% of fraud by count. They are small and
+      unremarkable: inside the cardholder’s normal range, at familiar merchants, during normal
+      hours. No check fires and the model scores them low. Catching them at these thresholds
+      would cost more in false declines than the fraud is worth.</p></div>
+    <div class="limit"><span class="mark">→</span>
+      <p><b>365 legitimate customers are challenged or declined.</b> The memos show most are
+      large first-time purchases at unfamiliar merchants — genuinely ambiguous cases.</p></div>
+    <div class="limit"><span class="mark">→</span>
+      <p><b>Calibration is under-confident in the middle band.</b> Transactions scored around
+      0.55 come in at 0.36 observed. Small samples, but it biases the policy toward
+      over-intervening in exactly the ambiguous range.</p></div>
+    <div class="limit"><span class="mark">→</span>
+      <p><b>The absolute rupee figures are not a forecast.</b> They follow from assumed cost
+      parameters and a simulated dataset whose fraud is more separable than real fraud. The
+      ranking of policies survives all 41 settings tested; the totals move a lot and should not
+      be quoted as a projection.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="col">
+    <h3>Reproducing it</h3>
+    <p class="body" style="font-size:.94rem;color:var(--ink-2)">
+      Everything runs from a seed. There is no notebook, and no step where a number was copied
+      by hand.
+    </p>
+  </div>
+  <div class="runcmds col">bash scripts/generate_data.sh 700   <span class="c"># ~2 min</span>
+python scripts/build_features.py    <span class="c"># ~20 s · 917,792 rows, point-in-time</span>
+python scripts/train_model.py       <span class="c"># ~30 s</span>
+python scripts/demo_run.py          <span class="c"># ~60 s · audit log, memos, latency</span>
+python eval/run_eval.py             <span class="c"># the headline table</span>
+python eval/sensitivity.py          <span class="c"># 41 cost settings</span>
+pytest tests/ -q                    <span class="c"># 35 passing</span></div>
+
+  <div class="sig">
+    <span>Tribunal · fraud triage that writes down why</span>
+    <span>Razorpay AI Buildathon 2026 · AI Risk Manager track</span>
+  </div>
+</footer>
+
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const tip = document.getElementById("tip");
+  function showTip(e, html){
+    tip.innerHTML = html;
+    tip.classList.add("on");
+    const pad = 14;
+    let x = e.clientX + pad, y = e.clientY + pad;
+    const r = tip.getBoundingClientRect();
+    if (x + r.width > window.innerWidth - 8) x = e.clientX - r.width - pad;
+    if (y + r.height > window.innerHeight - 8) y = e.clientY - r.height - pad;
+    tip.style.left = x + "px";
+    tip.style.top = y + "px";
+  }
+  function hideTip(){ tip.classList.remove("on"); }
+
+  function attach(el, html){
+    el.addEventListener("mousemove", e => showTip(e, html));
+    el.addEventListener("mouseleave", hideTip);
+    el.setAttribute("tabindex", "0");
+    el.addEventListener("focus", e => {
+      const b = el.getBoundingClientRect();
+      showTip({clientX: b.left + b.width/2, clientY: b.top}, html);
+    });
+    el.addEventListener("blur", hideTip);
+  }
+
+  const SVGNS = "http://www.w3.org/2000/svg";
+  function el(name, attrs){
+    const n = document.createElementNS(SVGNS, name);
+    for (const k in attrs) n.setAttribute(k, attrs[k]);
+    return n;
+  }
+  function svgRoot(host, w, h){
+    const s = el("svg", {viewBox: `0 0 ${w} ${h}`, role: "img"});
+    host.appendChild(s);
+    return s;
+  }
+  // Western grouping, not en-IN lakh grouping: the tables, stat tiles and the
+  // repository all read ₹1,040,422, and one number spelled two ways on one page
+  // is worse than either convention.
+  const inr = v => "₹" + Math.round(v).toLocaleString("en-US");
+  const compact = v => {
+    const a = Math.abs(v);
+    if (a >= 1e6) return (v/1e6).toFixed(2).replace(/\.?0+$/,"") + "M";
+    if (a >= 1e3) return Math.round(v/1e3) + "k";
+    return String(Math.round(v));
+  };
+
+  /* ---------------- policy bars (diverging around zero) ---------------- */
+  function policyChart(){
+    const host = document.getElementById("c-policy");
+    const data = [
+      {label:"Hand-written rules",       v:-156540.84, note:"81.2% of fraud stopped · 3,607 good customers declined"},
+      {label:"Approve everything",       v:0,          note:"the status quo · ₹560,519 of fraud let through"},
+      {label:"Model, block at p ≥ 0.9",  v:978538.48,  note:"93.1% stopped · 5 good customers hit"},
+      {label:"Model, block at p ≥ 0.5",  v:1014613.81, note:"97.1% stopped · 63 good customers hit"},
+      {label:"Tribunal",                 v:1040421.66, note:"99.3% stopped · 365 touched · ₹16,844 friction", hero:true}
+    ];
+    const W = 900, rowH = 46, padT = 8, padB = 34, labelW = 196, padR = 132;
+    const H = padT + data.length*rowH + padB;
+    const s = svgRoot(host, W, H);
+    s.setAttribute("aria-label", "Net rupees saved by policy");
+
+    const min = Math.min(...data.map(d=>d.v)), max = Math.max(...data.map(d=>d.v));
+    const x0 = labelW, x1 = W - padR;
+    const lo = Math.min(min, 0) * 1.12, hi = max * 1.06;
+    const sx = v => x0 + (v - lo) / (hi - lo) * (x1 - x0);
+    const zero = sx(0);
+
+    [0, 500000, 1000000].forEach(t => {
+      s.appendChild(el("line", {x1:sx(t), x2:sx(t), y1:padT, y2:padT+data.length*rowH,
+        stroke:"var(--rule-soft)", "stroke-width":1}));
+      const tx = el("text", {x:sx(t), y:H-14, "text-anchor":"middle",
+        fill:"var(--ink-3)", "font-size":"11.5", "font-family":"var(--mono)"});
+      tx.textContent = t === 0 ? "₹0" : compact(t);
+      s.appendChild(tx);
+    });
+
+    data.forEach((d, i) => {
+      const y = padT + i*rowH;
+      const cy = y + rowH/2;
+      const lab = el("text", {x:labelW-16, y:cy+4, "text-anchor":"end",
+        fill: d.hero ? "var(--ink)" : "var(--ink-2)", "font-size":"13",
+        "font-weight": d.hero ? "600" : "400", "font-family":"var(--sans)"});
+      lab.textContent = d.label;
+      s.appendChild(lab);
+
+      const bh = 20;
+      const neg = d.v < 0;
+      const bx = neg ? sx(d.v) : zero;
+      const bw = Math.max(Math.abs(sx(d.v) - zero), d.v === 0 ? 0 : 1.5);
+      const fill = neg ? "var(--crit)" : (d.hero ? "var(--s1)" : "var(--ink-3)");
+      const g = el("g", {});
+      const rect = el("rect", {x:bx, y:cy-bh/2, width:bw, height:bh, fill:fill, rx:2});
+      g.appendChild(rect);
+      const val = el("text", {x: neg ? zero + 10 : sx(d.v) + 10, y:cy+4,
+        fill: neg ? "var(--crit)" : "var(--ink)", "font-size":"12.5", "font-weight":"600",
+        "font-family":"var(--mono)"});
+      val.textContent = (d.v < 0 ? "−" : "") + inr(Math.abs(d.v));
+      g.appendChild(val);
+      s.appendChild(g);
+      attach(g, `<b>${d.label}</b><br>${d.note}`);
+    });
+
+    s.appendChild(el("line", {x1:zero, x2:zero, y1:padT-2, y2:padT+data.length*rowH+2,
+      stroke:"var(--ink-2)", "stroke-width":1.5}));
+  }
+
+  /* ---------------- model-quality sweep (two lines) ---------------- */
+  function sweepChart(){
+    const host = document.getElementById("c-sweep");
+    const rows = [
+      {m:"amount only",          pr:0.2849, thr:265927,  ec:698217},
+      {m:"+ merchant category",  pr:0.7204, thr:689738,  ec:874284},
+      {m:"+ time of day",        pr:0.8314, thr:792726,  ec:916619},
+      {m:"+ card spend profile", pr:0.8402, thr:793527,  ec:932449},
+      {m:"+ velocity",           pr:0.9587, thr:990881,  ec:1024879}
+    ];
+    const W = 900, H = 420, L = 74, R = 26, T = 40, B = 62;
+    const s = svgRoot(host, W, H);
+    s.setAttribute("aria-label", "Net saved versus model quality");
+
+    const xlo = 0.22, xhi = 1.0, ylo = 0, yhi = 1150000;
+    const sx = v => L + (v - xlo)/(xhi - xlo) * (W - L - R);
+    const sy = v => H - B - (v - ylo)/(yhi - ylo) * (H - T - B);
+
+    [0, 250000, 500000, 750000, 1000000].forEach(t=>{
+      s.appendChild(el("line",{x1:L, x2:W-R, y1:sy(t), y2:sy(t),
+        stroke:"var(--rule-soft)","stroke-width":1}));
+      const tx = el("text",{x:L-12,y:sy(t)+4,"text-anchor":"end",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent = t===0 ? "₹0" : compact(t);
+      s.appendChild(tx);
+    });
+    [0.3,0.5,0.7,0.9].forEach(t=>{
+      const tx = el("text",{x:sx(t),y:H-B+22,"text-anchor":"middle",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent = t.toFixed(1);
+      s.appendChild(tx);
+    });
+
+    const area = rows.map(r=>`${sx(r.pr)},${sy(r.ec)}`).join(" ") + " " +
+                 rows.slice().reverse().map(r=>`${sx(r.pr)},${sy(r.thr)}`).join(" ");
+    s.appendChild(el("polygon",{points:area, fill:"var(--s1)", opacity:"0.10"}));
+
+    const mk = (key, color) => {
+      s.appendChild(el("polyline",{points: rows.map(r=>`${sx(r.pr)},${sy(r[key])}`).join(" "),
+        fill:"none", stroke:color, "stroke-width":2.5, "stroke-linejoin":"round"}));
+      rows.forEach(r=>{
+        const g = el("g",{});
+        g.appendChild(el("circle",{cx:sx(r.pr), cy:sy(r[key]), r:6, fill:color,
+          stroke:"var(--surface)", "stroke-width":2}));
+        s.appendChild(g);
+        attach(g, `<b>${r.m}</b><br>PR-AUC ${r.pr}<br>${key==="ec"?"expected cost":"best threshold"}: ${inr(r[key])}`);
+      });
+    };
+    mk("thr", "var(--s2)");
+    mk("ec", "var(--s1)");
+
+    // Two rungs sit 0.009 PR-AUC apart, so their labels are stacked rather than
+    // printed on top of one another.
+    let prevX = -1, tier = 0;
+    rows.forEach((r,i)=>{
+      const gain = Math.round(100*(r.ec-r.thr)/r.thr);
+      tier = (r.pr - prevX) < 0.05 ? tier + 1 : 0;
+      prevX = r.pr;
+      const t = el("text",{x:sx(r.pr), y:sy(r.ec) - 16 - tier*19,
+        "text-anchor": i===0?"start":"middle",
+        fill:"var(--ink)","font-size":"12.5","font-weight":"600","font-family":"var(--mono)"});
+      t.textContent = "+" + gain + "%";
+      s.appendChild(t);
+    });
+
+    const xl = el("text",{x:(L+W-R)/2, y:H-12, "text-anchor":"middle", fill:"var(--ink-2)",
+      "font-size":"12.5","font-family":"var(--sans)"});
+    xl.textContent = "Model quality on the held-out window (PR-AUC)";
+    s.appendChild(xl);
+  }
+
+  /* ---------------- review demand ---------------- */
+  function reviewChart(){
+    const host = document.getElementById("c-review");
+    const rows = [{c:10,n:155},{c:30,n:44},{c:60,n:5},{c:120,n:0},{c:250,n:0},{c:500,n:0}];
+    const W = 900, H = 330, L = 66, R = 30, T = 34, B = 62;
+    const s = svgRoot(host, W, H);
+    s.setAttribute("aria-label", "Manual reviews wanted versus cost per review");
+
+    const lx = v => Math.log10(v);
+    const xlo = lx(8), xhi = lx(620);
+    const sx = v => L + (lx(v)-xlo)/(xhi-xlo) * (W-L-R);
+    const sy = v => H - B - (v/175) * (H-T-B);
+
+    [0,50,100,150].forEach(t=>{
+      s.appendChild(el("line",{x1:L,x2:W-R,y1:sy(t),y2:sy(t),stroke:"var(--rule-soft)","stroke-width":1}));
+      const tx=el("text",{x:L-12,y:sy(t)+4,"text-anchor":"end",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent=t; s.appendChild(tx);
+    });
+
+    // The affordability boundary sits between the last setting that buys reviews
+    // (₹60) and the first that buys none (₹120), rather than on top of a data point.
+    const bx = sx(85);
+    s.appendChild(el("line",{x1:bx,x2:bx,y1:T-6,y2:H-B,stroke:"var(--accent)",
+      "stroke-width":1.5,"stroke-dasharray":"4 4"}));
+    const bl = el("text",{x:bx+10,y:T+6,fill:"var(--accent)","font-size":"11.5",
+      "font-family":"var(--mono)"});
+    bl.textContent = "review stops paying →";
+    s.appendChild(bl);
+
+    s.appendChild(el("polyline",{points: rows.map(r=>`${sx(r.c)},${sy(r.n)}`).join(" "),
+      fill:"none", stroke:"var(--s1)","stroke-width":2.5,"stroke-linejoin":"round"}));
+
+    rows.forEach(r=>{
+      const g = el("g",{});
+      g.appendChild(el("circle",{cx:sx(r.c),cy:sy(r.n),r:6,fill:"var(--s1)",
+        stroke:"var(--surface)","stroke-width":2}));
+      s.appendChild(g);
+      const t = el("text",{x:sx(r.c), y:sy(r.n)-15,"text-anchor":"middle",fill:"var(--ink)",
+        "font-size":"12.5","font-weight":"600","font-family":"var(--mono)"});
+      t.textContent = r.n;
+      s.appendChild(t);
+      const xt = el("text",{x:sx(r.c),y:H-B+22,"text-anchor":"middle",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      xt.textContent = "₹"+r.c;
+      s.appendChild(xt);
+      attach(g, `<b>₹${r.c} per review</b><br>${r.n} case${r.n===1?"":"s"} sent to an analyst`);
+    });
+
+    // Mark the shipped assumption, above the axis so it clears the tick label.
+    s.appendChild(el("circle",{cx:sx(120),cy:sy(0),r:11,fill:"none",stroke:"var(--s2)","stroke-width":2}));
+    const al = el("text",{x:sx(120)+18,y:sy(0)+5,fill:"var(--s2)",
+      "font-size":"11.5","font-family":"var(--mono)"});
+    al.textContent = "← assumed";
+    s.appendChild(al);
+
+    const xl = el("text",{x:(L+W-R)/2,y:H-12,"text-anchor":"middle",fill:"var(--ink-2)",
+      "font-size":"12.5","font-family":"var(--sans)"});
+    xl.textContent = "Fully-loaded cost of one manual review";
+    s.appendChild(xl);
+  }
+
+  /* ---------------- feature importance ---------------- */
+  function impChart(){
+    const host = document.getElementById("c-imp");
+    const rows = [
+      {f:"amt", d:0.8013, note:"the transaction amount"},
+      {f:"category", d:0.5426, note:"merchant category"},
+      {f:"amt_24h", d:0.0843, note:"rupees spent on this card in 24h"},
+      {f:"hour", d:0.0338, note:"hour of day"},
+      {f:"is_night", d:0.0223, note:"transaction between 22:00 and 03:00"},
+      {f:"age_years", d:0.0200, note:"cardholder age"},
+      {f:"amt_over_card_mean", d:0.0087, note:"amount ÷ this card's average"},
+      {f:"secs_since_last", d:0.0048, note:"gap since the card's previous transaction"}
+    ];
+    const W = 900, rowH = 34, padT = 6, padB = 32, labelW = 210, padR = 76;
+    const H = padT + rows.length*rowH + padB;
+    const s = svgRoot(host, W, H);
+    s.setAttribute("aria-label", "Permutation importance by feature");
+
+    const max = rows[0].d * 1.02;
+    const x0 = labelW, x1 = W - padR;
+    const sx = v => x0 + v/max * (x1-x0);
+
+    [0,0.2,0.4,0.6,0.8].forEach(t=>{
+      s.appendChild(el("line",{x1:sx(t),x2:sx(t),y1:padT,y2:padT+rows.length*rowH,
+        stroke:"var(--rule-soft)","stroke-width":1}));
+      const tx=el("text",{x:sx(t),y:H-12,"text-anchor":"middle",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent=t.toFixed(1); s.appendChild(tx);
+    });
+
+    rows.forEach((r,i)=>{
+      const cy = padT + i*rowH + rowH/2;
+      const lab = el("text",{x:labelW-16,y:cy+4,"text-anchor":"end",fill:"var(--ink-2)",
+        "font-size":"12.5","font-family":"var(--mono)"});
+      lab.textContent = r.f;
+      s.appendChild(lab);
+      const g = el("g",{});
+      g.appendChild(el("rect",{x:x0,y:cy-8,width:Math.max(sx(r.d)-x0,1.5),height:16,
+        fill:"var(--s1)",rx:2}));
+      const v = el("text",{x:sx(r.d)+10,y:cy+4,fill:"var(--ink)","font-size":"12",
+        "font-family":"var(--mono)"});
+      v.textContent = r.d.toFixed(3);
+      g.appendChild(v);
+      s.appendChild(g);
+      attach(g, `<b>${r.f}</b><br>${r.note}<br>shuffling it costs ${r.d.toFixed(3)} PR-AUC`);
+    });
+
+    s.appendChild(el("line",{x1:x0,x2:x0,y1:padT,y2:padT+rows.length*rowH,
+      stroke:"var(--ink-2)","stroke-width":1.5}));
+  }
+
+  policyChart();
+  sweepChart();
+  reviewChart();
+  impChart();
+})();
+</script>
