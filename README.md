@@ -6,6 +6,13 @@ Every decline gets a reason. Every reason gets a receipt.
 
 Razorpay AI Buildathon 2026 — AI Risk Manager track.
 
+| Deliverable | Where |
+|---|---|
+| Working project | `api/` (FastAPI service) · `scripts/demo_run.py` (CLI) |
+| Public repository | <https://github.com/Artic853/tribunal> |
+| System documentation | [ARCHITECTURE.md](ARCHITECTURE.md) · this README |
+| Pitch | [PITCH.md](PITCH.md) · project page source in [`site/`](site/) |
+
 ---
 
 ## The problem I actually went after
