@@ -1,0 +1,994 @@
+<title>Tribunal — Priced Decisions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  color-scheme: light;
+  --bg:#E9ECF0;
+  --surface:#F5F7F9;
+  --surface-2:#FFFFFF;
+  --sunken:#E1E6EC;
+  --ink:#0B1220;
+  --ink-2:#4C5768;
+  --ink-3:#78849A;
+  --line:#D6DCE5;
+  --line-soft:#E4E9EF;
+  --accent:#D2551F;
+  --accent-ink:#FFFFFF;
+  --crit:#B32D28;
+  --good:#0A7D45;
+  /* Friction ladder — an ordinal ramp, one hue, light to dark as friction rises. */
+  --rung-1:#6da7ec;
+  --rung-2:#2a78d6;
+  --rung-3:#1c5cab;
+  --rung-4:#0d366b;
+  --rung-ink-1:#0B1220;
+  --rung-ink-2:#FFFFFF;
+  --rung-ink-3:#FFFFFF;
+  --rung-ink-4:#FFFFFF;
+
+  --display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body:"Archivo", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --wide:1120px;
+  --shadow:0 1px 2px rgba(11,18,32,.05), 0 16px 40px -28px rgba(11,18,32,.4);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme: dark;
+    --bg:#0D1117;
+    --surface:#1A202B;
+    --surface-2:#212936;
+    --sunken:#141A23;
+    --ink:#E9EDF3;
+    --ink-2:#9BA7B8;
+    --ink-3:#6F7C8F;
+    --line:#2A3341;
+    --line-soft:#222A36;
+    --accent:#E0703C;
+    --accent-ink:#14181F;
+    --crit:#E4676B;
+    --good:#35C07E;
+    /* Same ramp, mapped in reverse: on a dark ground, rising friction reads as
+       rising brightness. Approve is the dim rung — nothing happened to the customer. */
+    --rung-1:#184f95;
+    --rung-2:#3987e5;
+    --rung-3:#86b6ef;
+    --rung-4:#cde2fb;
+    --rung-ink-1:#FFFFFF;
+    --rung-ink-2:#FFFFFF;
+    --rung-ink-3:#0B1220;
+    --rung-ink-4:#0B1220;
+    --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 40px -28px rgba(0,0,0,.9);
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme: dark;
+  --bg:#0D1117; --surface:#1A202B; --surface-2:#212936; --sunken:#141A23;
+  --ink:#E9EDF3; --ink-2:#9BA7B8; --ink-3:#6F7C8F;
+  --line:#2A3341; --line-soft:#222A36;
+  --accent:#E0703C; --accent-ink:#14181F; --crit:#E4676B; --good:#35C07E;
+  --rung-1:#184f95; --rung-2:#3987e5; --rung-3:#86b6ef; --rung-4:#cde2fb;
+  --rung-ink-1:#FFFFFF; --rung-ink-2:#FFFFFF; --rung-ink-3:#0B1220; --rung-ink-4:#0B1220;
+  --shadow:0 1px 2px rgba(0,0,0,.5), 0 16px 40px -28px rgba(0,0,0,.9);
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);
+  font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:var(--wide);margin:0 auto;padding:0 26px}
+.prose{max-width:66ch}
+p{margin:0}
+h1,h2,h3{margin:0;font-family:var(--display);text-wrap:balance;
+  font-variation-settings:"wdth" 116;letter-spacing:-.018em;line-height:1.06}
+h2{font-size:clamp(1.7rem,3.6vw,2.5rem);font-weight:700}
+h3{font-size:1.06rem;font-weight:700;line-height:1.25;font-variation-settings:"wdth" 108;
+  letter-spacing:-.006em}
+a{color:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:3px}
+.num{font-variant-numeric:tabular-nums}
+.mono{font-family:var(--mono)}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:40;background:color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.navin{max-width:var(--wide);margin:0 auto;padding:0 26px;height:58px;
+  display:flex;align-items:center;gap:28px}
+.brand{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 120;
+  font-size:1.06rem;letter-spacing:-.02em;text-decoration:none}
+.brand i{color:var(--accent);font-style:normal}
+.navlinks{display:flex;gap:22px;margin-left:auto;font-size:.87rem}
+.navlinks a{color:var(--ink-2);text-decoration:none}
+.navlinks a:hover{color:var(--ink)}
+.navcta{
+  font-size:.83rem;font-weight:600;text-decoration:none;
+  border:1px solid var(--line);padding:6px 13px;border-radius:100px;color:var(--ink);
+  background:var(--surface);white-space:nowrap;
+}
+.navcta:hover{border-color:var(--ink-3)}
+@media (max-width:820px){.navlinks{display:none}}
+
+/* ---------- hero ---------- */
+.hero{padding:76px 0 8px;display:grid;grid-template-columns:1.15fr .85fr;gap:56px;align-items:start}
+@media (max-width:900px){.hero{grid-template-columns:1fr;gap:36px;padding-top:52px}}
+.kicker{font-family:var(--mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:20px}
+.hero h1{font-size:clamp(2.5rem,6.2vw,4.05rem);font-weight:800;font-variation-settings:"wdth" 112;
+  letter-spacing:-.032em;line-height:1.0}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.sub{margin-top:22px;font-size:1.12rem;color:var(--ink-2);max-width:46ch}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px}
+.btn{
+  font-family:var(--body);font-size:.92rem;font-weight:600;text-decoration:none;
+  padding:11px 20px;border-radius:100px;border:1px solid transparent;cursor:pointer;
+  display:inline-flex;align-items:center;gap:9px;
+}
+.btn.primary{background:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.ghost{border-color:var(--line);color:var(--ink);background:var(--surface)}
+.btn.ghost:hover{border-color:var(--ink-3)}
+
+/* hero ladder */
+.ladder{border:1px solid var(--line);background:var(--surface);border-radius:12px;
+  padding:20px;box-shadow:var(--shadow)}
+.ladder .lh{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:16px}
+.rung{display:grid;grid-template-columns:14px 1fr auto;gap:13px;align-items:center;
+  padding:11px 0;border-bottom:1px solid var(--line-soft)}
+.rung:last-child{border-bottom:none}
+.dot{width:14px;height:14px;border-radius:3px}
+/* Block, not inline: an inline span puts the name and its description on the same
+   line with no separator at all. */
+.rname{display:block;font-weight:600;font-size:.94rem}
+.rdesc{display:block;font-size:.8rem;color:var(--ink-3);margin-top:2px;line-height:1.35}
+.rcost{font-family:var(--mono);font-size:.78rem;color:var(--ink-2);text-align:right;white-space:nowrap}
+
+/* ---------- sections ---------- */
+section{padding:82px 0 0}
+.eyebrow{font-family:var(--mono);font-size:.71rem;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:14px}
+.lede{margin-top:18px;font-size:1.04rem;color:var(--ink-2)}
+.body{margin-top:14px;color:var(--ink-2)}
+
+/* ---------- the number band ---------- */
+.band{margin-top:42px;border:1px solid var(--line);background:var(--surface);border-radius:12px;
+  display:grid;grid-template-columns:auto 1fr;gap:38px;padding:34px 36px;align-items:center}
+@media (max-width:760px){.band{grid-template-columns:1fr;gap:18px;padding:26px}}
+.bignum{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 108;
+  font-size:clamp(2.6rem,7vw,4rem);letter-spacing:-.035em;color:var(--crit);line-height:.95;
+  font-variant-numeric:tabular-nums}
+.band p{color:var(--ink-2);max-width:52ch}
+.band strong{color:var(--ink);font-weight:600}
+
+/* ---------- playground ---------- */
+.pg{margin-top:40px;border:1px solid var(--line);background:var(--surface);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow)}
+.pgtop{display:grid;grid-template-columns:340px 1fr;gap:0}
+@media (max-width:880px){.pgtop{grid-template-columns:1fr}}
+.controls{padding:26px;border-right:1px solid var(--line);background:var(--surface-2)}
+@media (max-width:880px){.controls{border-right:none;border-bottom:1px solid var(--line)}}
+.ctl{margin-bottom:26px}
+.ctl:last-child{margin-bottom:0}
+.ctlhead{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:9px}
+.ctllabel{font-size:.83rem;font-weight:600}
+.ctlval{font-family:var(--mono);font-size:.95rem;font-weight:500;font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:100px;
+  background:var(--sunken);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;width:20px;height:20px;border-radius:50%;
+  background:var(--accent);border:3px solid var(--surface-2);cursor:grab;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+input[type=range]::-moz-range-thumb{
+  width:20px;height:20px;border-radius:50%;background:var(--accent);
+  border:3px solid var(--surface-2);cursor:grab;box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+.scalehint{display:flex;justify-content:space-between;font-family:var(--mono);
+  font-size:.68rem;color:var(--ink-3);margin-top:7px}
+.presets{margin-top:28px;padding-top:22px;border-top:1px solid var(--line-soft)}
+.presets .ph{font-family:var(--mono);font-size:.68rem;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--ink-3);margin-bottom:11px}
+.pbtns{display:flex;flex-wrap:wrap;gap:7px}
+.pbtn{font-family:var(--body);font-size:.79rem;padding:6px 11px;border-radius:100px;
+  border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer}
+.pbtn:hover{border-color:var(--ink-3);color:var(--ink)}
+.pbtn[aria-pressed=true]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+
+.readout{padding:26px}
+.verdictline{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.vlabel{font-family:var(--mono);font-size:.7rem;letter-spacing:.13em;text-transform:uppercase;
+  color:var(--ink-3)}
+.vaction{font-family:var(--display);font-weight:800;font-variation-settings:"wdth" 110;
+  font-size:clamp(1.5rem,3.4vw,2.05rem);letter-spacing:-.025em;line-height:1.05}
+.vwhy{margin-top:10px;color:var(--ink-2);font-size:.95rem;max-width:56ch}
+.vwhy b{color:var(--ink);font-weight:600}
+
+.costs{margin-top:8px;display:flex;flex-direction:column;gap:9px}
+.readout .costhead{margin-top:24px}
+.costhead{display:grid;grid-template-columns:162px 1fr 96px;gap:14px;
+  font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);margin-bottom:2px}
+.costhead span:last-child{text-align:right}
+.crow{display:grid;grid-template-columns:162px 1fr 96px;gap:14px;align-items:center}
+.cname{font-size:.87rem;font-weight:500;display:flex;align-items:center;gap:8px}
+.cname .dot{width:11px;height:11px;border-radius:3px;flex:0 0 auto}
+.ctrack{height:26px;background:var(--sunken);border-radius:4px;position:relative;overflow:hidden}
+/* display:block — height:100% does nothing on a non-replaced inline element, which
+   left every bar rendering as an empty track. */
+.cfill{display:block;height:100%;border-radius:4px;transition:width .18s ease}
+.crow.chosen .ctrack{box-shadow:0 0 0 2px var(--accent)}
+.cval{font-family:var(--mono);font-size:.84rem;text-align:right;font-variant-numeric:tabular-nums;
+  color:var(--ink-2)}
+.crow.chosen .cval{color:var(--ink);font-weight:600}
+.crow.chosen .cname{font-weight:700}
+.chosentag{font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-left:2px}
+
+.boundary{margin-top:22px;padding:15px 17px;border-radius:9px;background:var(--sunken);
+  font-size:.89rem;color:var(--ink-2);line-height:1.5}
+.boundary b{color:var(--ink);font-weight:600;font-family:var(--mono);font-size:.86rem}
+.pgfoot{padding:15px 26px;border-top:1px solid var(--line);background:var(--surface-2);
+  font-family:var(--mono);font-size:.73rem;color:var(--ink-3);display:flex;gap:10px;
+  flex-wrap:wrap;align-items:center}
+.pgfoot .live{width:7px;height:7px;border-radius:50%;background:var(--good);flex:0 0 auto}
+
+/* ---------- steps ---------- */
+.steps{margin-top:38px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;
+  background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+@media (max-width:880px){.steps{grid-template-columns:1fr}}
+.step{background:var(--surface);padding:24px 22px}
+.step .sk{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:11px}
+.step p{margin-top:8px;font-size:.9rem;color:var(--ink-2)}
+
+/* ---------- proof ---------- */
+.figs{margin-top:38px;display:flex;flex-direction:column;gap:24px}
+figure{margin:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:24px 22px 18px}
+.figtitle{font-family:var(--display);font-weight:700;font-size:1.02rem;
+  font-variation-settings:"wdth" 108;letter-spacing:-.008em}
+.figsub{font-size:.86rem;color:var(--ink-2);margin-top:5px;max-width:64ch}
+.chart{margin-top:18px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:16px;margin-top:13px;font-size:.8rem;color:var(--ink-2)}
+.key{display:inline-flex;align-items:center;gap:7px}
+.swatch{width:11px;height:11px;border-radius:2px}
+figcaption{margin-top:13px;font-size:.82rem;color:var(--ink-3);max-width:66ch}
+
+.tablewrap{margin-top:26px;border:1px solid var(--line);border-radius:12px;overflow-x:auto;
+  background:var(--surface)}
+table{border-collapse:collapse;width:100%;min-width:600px;font-size:.9rem}
+th,td{padding:12px 15px;text-align:right;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+thead th{font-family:var(--mono);font-size:.67rem;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--ink-3);font-weight:500;border-bottom:1px solid var(--line)}
+tbody tr:last-child td{border-bottom:none}
+td.n{font-family:var(--mono);font-size:.85rem;font-variant-numeric:tabular-nums}
+tr.hi td{background:var(--surface-2);font-weight:600}
+tr.hi td:first-child{box-shadow:inset 3px 0 0 var(--accent)}
+.neg{color:var(--crit)}.pos{color:var(--good)}
+
+/* ---------- failures ---------- */
+.fails{margin-top:38px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media (max-width:940px){.fails{grid-template-columns:1fr}}
+.fail{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:24px 22px;
+  display:flex;flex-direction:column}
+.fail .ft{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--crit);margin-bottom:12px}
+.fail p{margin-top:10px;font-size:.9rem;color:var(--ink-2)}
+.fail .stat{margin-top:auto;padding-top:16px;font-family:var(--mono);font-size:.76rem;
+  color:var(--ink-3)}
+.fail .stat b{color:var(--ink);font-weight:500}
+
+/* ---------- receipt ---------- */
+.slab{margin-top:32px;border:1px solid var(--line);border-radius:12px;background:var(--surface);
+  overflow:hidden}
+.slabhead{padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface-2);
+  font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink-3);display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.slabbody{padding:18px;font-family:var(--mono);font-size:.78rem;line-height:1.65;
+  white-space:pre;overflow-x:auto;color:var(--ink-2)}
+.slabbody .hl{color:var(--ink);font-weight:500}
+.slabbody .ac{color:var(--accent)}
+.slabbody .mut{color:var(--ink-3)}
+
+/* ---------- close ---------- */
+.close{margin-top:64px;border:1px solid var(--line);border-radius:14px;background:var(--surface);
+  padding:44px 40px;text-align:left}
+@media (max-width:640px){.close{padding:30px 24px}}
+.close h2{max-width:20ch}
+.close p{margin-top:16px;color:var(--ink-2);max-width:58ch}
+.runcmds{margin-top:24px;font-family:var(--mono);font-size:.77rem;color:var(--ink-2);
+  background:var(--sunken);border-radius:9px;padding:16px;white-space:pre;overflow-x:auto;line-height:1.75}
+.runcmds .c{color:var(--ink-3)}
+
+footer{margin-top:56px;border-top:1px solid var(--line);padding:26px 0 0;
+  display:flex;flex-wrap:wrap;gap:8px 22px;font-size:.83rem;color:var(--ink-3)}
+
+.tip{position:fixed;pointer-events:none;z-index:60;opacity:0;transition:opacity .1s;
+  background:var(--ink);color:var(--bg);font-family:var(--mono);font-size:.72rem;
+  padding:7px 9px;border-radius:4px;line-height:1.45;max-width:250px}
+.tip.on{opacity:1}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<nav>
+  <div class="navin">
+    <a class="brand" href="#top">Tribunal<i>.</i></a>
+    <div class="navlinks">
+      <a href="#idea">The idea</a>
+      <a href="#play">Playground</a>
+      <a href="#how">How it works</a>
+      <a href="#proof">Proof</a>
+      <a href="#limits">Failures</a>
+    </div>
+    <span class="navcta">Razorpay Buildathon 2026</span>
+  </div>
+</nav>
+
+<div class="wrap" id="top">
+
+  <header class="hero">
+    <div>
+      <p class="kicker">AI Risk Manager</p>
+      <h1>Stop scoring fraud.<br>Start <em>pricing</em> it.</h1>
+      <p class="sub">
+        Tribunal doesn’t ask “is this fraud?” It asks what each possible response would
+        cost in rupees — approve, challenge, review, decline — and takes the cheapest one.
+        Then it writes down why.
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="#play">Try the decision engine →</a>
+        <a class="btn ghost" href="#limits">Read what went wrong</a>
+      </div>
+    </div>
+
+    <div class="ladder">
+      <div class="lh">The friction ladder</div>
+      <div class="rung">
+        <span class="dot" style="background:var(--rung-1)"></span>
+        <span><span class="rname">Approve</span><span class="rdesc">The customer notices nothing</span></span>
+        <span class="rcost">₹0</span>
+      </div>
+      <div class="rung">
+        <span class="dot" style="background:var(--rung-2)"></span>
+        <span><span class="rname">Challenge</span><span class="rdesc">One-time passcode. Cheap for a real customer, useless to a thief</span></span>
+        <span class="rcost">₹15</span>
+      </div>
+      <div class="rung">
+        <span class="dot" style="background:var(--rung-3)"></span>
+        <span><span class="rname">Review</span><span class="rdesc">A human analyst looks. There are only so many of them</span></span>
+        <span class="rcost">₹120</span>
+      </div>
+      <div class="rung">
+        <span class="dot" style="background:var(--rung-4)"></span>
+        <span><span class="rname">Decline</span><span class="rdesc">Stops the fraud. Also stops the customer</span></span>
+        <span class="rcost">15% + ₹250</span>
+      </div>
+    </div>
+  </header>
+
+  <section id="idea">
+    <div class="prose">
+      <p class="eyebrow">The idea</p>
+      <h2>A score is not a decision.</h2>
+      <p class="lede">
+        At a 2% chance of fraud, declining a ₹200 transaction is a bad trade and declining
+        a ₹90,000 transaction is a good one. One threshold cannot express both — but every
+        fraud classifier ships exactly one.
+      </p>
+      <p class="body">
+        So a system built on a threshold has to answer every hard case the same way: block it.
+        That is why fraud rules have a reputation for costing more than the fraud. Here is
+        what a sensible hand-written rule set does on our held-out data.
+      </p>
+    </div>
+
+    <div class="band">
+      <div class="bignum num">−₹156,541</div>
+      <p>
+        Not “underperforms”. <strong>Loses money</strong> — worse than approving every single
+        transaction, over 92 days. It catches 81% of fraud by value, and pays for it by
+        declining <strong>3,607 legitimate customers</strong>. Nothing in a precision score
+        would have told you that.
+      </p>
+    </div>
+
+    <div class="prose" style="margin-top:34px">
+      <p class="body">
+        Tribunal replaces the threshold with arithmetic. Give it a calibrated probability and
+        an amount, and it computes the expected rupee cost of all four responses and picks the
+        minimum. The middle rungs of that ladder are the whole point: a passcode challenge
+        costs a real customer almost nothing and stops a fraudster who doesn’t have their phone.
+      </p>
+    </div>
+  </section>
+
+  <section id="play">
+    <div class="prose">
+      <p class="eyebrow">Playground</p>
+      <h2>Watch a decision change its mind.</h2>
+      <p class="lede">
+        Drag the amount and the risk. Everything below recalculates with the real cost model —
+        the same constants the evaluated system uses, not a mock-up for the web page.
+      </p>
+    </div>
+
+    <div class="pg">
+      <div class="pgtop">
+        <div class="controls">
+          <div class="ctl">
+            <div class="ctlhead">
+              <label class="ctllabel" for="amt">Transaction amount</label>
+              <span class="ctlval" id="amtOut">₹8,400</span>
+            </div>
+            <input type="range" id="amt" min="0" max="1000" value="612" step="1"
+                   aria-label="Transaction amount in rupees">
+            <div class="scalehint"><span>₹50</span><span>₹2,00,000</span></div>
+          </div>
+
+          <div class="ctl">
+            <div class="ctlhead">
+              <label class="ctllabel" for="prob">Probability of fraud</label>
+              <span class="ctlval" id="probOut">13.6%</span>
+            </div>
+            <input type="range" id="prob" min="0" max="1000" value="742" step="1"
+                   aria-label="Model probability of fraud">
+            <div class="scalehint"><span>0.01%</span><span>99%</span></div>
+          </div>
+
+          <div class="presets">
+            <div class="ph">Try a case</div>
+            <div class="pbtns" id="presets">
+              <button class="pbtn" data-a="340" data-p="0.0004">Everyday coffee</button>
+              <button class="pbtn" data-a="8400" data-p="0.136">First-time big buy</button>
+              <button class="pbtn" data-a="947" data-p="0.99">Obvious fraud</button>
+              <button class="pbtn" data-a="62000" data-p="0.04">Expensive &amp; unclear</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="readout">
+          <div class="verdictline">
+            <span class="vlabel">Verdict</span>
+            <span class="vaction" id="vaction">Challenge</span>
+          </div>
+          <p class="vwhy" id="vwhy"></p>
+
+          <div class="costhead">
+            <span>Action</span><span>Expected cost — shorter is better</span><span>Rupees</span>
+          </div>
+          <div class="costs" id="costs"></div>
+
+          <div class="boundary" id="boundary"></div>
+        </div>
+      </div>
+      <div class="pgfoot">
+        <span class="live"></span>
+        <span>running the cost model from <b>tribunal/economics.py</b> — chargeback fee ₹500 ·
+        false-decline 15% + ₹250 · challenge ₹15, stops 90% of fraud · review ₹120, catches 95%</span>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="prose">
+      <p class="eyebrow">How it works</p>
+      <h2>Six checks, one probability, four prices.</h2>
+      <p class="lede">
+        Everything below happens before the authorisation returns — in 55 microseconds at the
+        median.
+      </p>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="sk">01 · Features</div>
+        <h3>It can only see the past</h3>
+        <p>29 features built by streaming in time order, so a transaction can never see its own
+        future. Anything derived from fraud labels is held back seven days — at authorisation,
+        nobody yet knows whether a charge will be disputed.</p>
+      </div>
+      <div class="step">
+        <div class="sk">02 · Evidence</div>
+        <h3>Checks that write sentences</h3>
+        <p>Velocity, geolocation, spend profile, merchant risk, novelty, time of day. Each
+        returns what it looked at and one line a person can read — not a number folded into a
+        total that nobody can unpick later.</p>
+      </div>
+      <div class="step">
+        <div class="sk">03 · Probability</div>
+        <h3>A number that means what it says</h3>
+        <p>Gradient-boosted trees, isotonically calibrated. No class reweighting: the policy
+        multiplies this by rupees, so it has to be a real probability rather than a ranking
+        that merely sorts well.</p>
+      </div>
+      <div class="step">
+        <div class="sk">04 · Policy</div>
+        <h3>Cheapest action wins</h3>
+        <p>Expected cost of all four responses, and take the minimum — subject to how many
+        analysts actually exist today. Review admission runs on a daily budget with a
+        controller, not an unbounded queue.</p>
+      </div>
+      <div class="step">
+        <div class="sk">05 · Memo</div>
+        <h3>The reason, written down</h3>
+        <p>A case note assembled from the evidence that fired, in the order that mattered —
+        including the checks that stayed silent. “We looked and found nothing” and “we never
+        looked” are different answers.</p>
+      </div>
+      <div class="step">
+        <div class="sk">06 · Audit</div>
+        <h3>A receipt nobody can edit</h3>
+        <p>Each record carries the hash of the one before it. Change a past decision and every
+        hash after it breaks. Card numbers masked; approvals sampled, because auditing what you
+        let through matters too.</p>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:34px">
+      <h3>There is no language model in this loop</h3>
+      <p class="body">
+        That is a choice, not a gap. This code sits in the authorisation path of a payment: it
+        decides in 55 microseconds where an LLM call is three orders of magnitude slower, and it
+        is reproducible, which is the only thing that makes an audit trail worth having. Merchant
+        names are also attacker-controlled text — feeding them to a model that decides whether to
+        approve the attacker’s payment is a prompt-injection vector with a direct payout.
+      </p>
+      <p class="body">
+        The language model earns its place where a human would otherwise write prose: the case
+        note for the ~0.1% of transactions that reach an analyst. Off the hot path, with a
+        template fallback, because a memo outage must never affect a payment.
+      </p>
+    </div>
+  </section>
+
+  <section id="proof">
+    <div class="prose">
+      <p class="eyebrow">Proof</p>
+      <h2>160,139 transactions it had never seen.</h2>
+      <p class="lede">
+        92 days held out, containing 1,055 frauds worth ₹560,519. The model never saw this
+        window; neither did any feature.
+      </p>
+    </div>
+
+    <div class="tablewrap">
+      <table>
+        <thead>
+          <tr><th>Policy</th><th>Net saved</th><th>Fraud stopped</th>
+            <th>Good customers hit</th><th>Friction inflicted</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Approve everything</td><td class="n">₹0</td><td class="n">0%</td><td class="n">0</td><td class="n">₹0</td></tr>
+          <tr><td>Hand-written rules</td><td class="n neg">−₹156,541</td><td class="n">81.2%</td><td class="n">3,607</td><td class="n">₹836,913</td></tr>
+          <tr><td>Model, block at p ≥ 0.5</td><td class="n">₹1,014,614</td><td class="n">97.1%</td><td class="n">63</td><td class="n">₹20,810</td></tr>
+          <tr class="hi"><td>Tribunal</td><td class="n pos">₹1,040,422</td><td class="n">99.3%</td><td class="n">365</td><td class="n">₹16,844</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="band" style="margin-top:24px">
+      <div class="bignum num" style="color:var(--good)">19%</div>
+      <p>
+        Tribunal touches <strong>5.8× more</strong> good customers than a blocking threshold —
+        and inflicts <strong>19% less</strong> friction on them in total. Because most of the
+        extra interventions are a passcode, not a decline. It is not choosing whether to
+        intervene. It is choosing how.
+      </p>
+    </div>
+
+    <div class="figs">
+      <figure>
+        <div class="figtitle">Net rupees saved over 92 days</div>
+        <div class="figsub">Measured against approving every transaction. Below the line is
+        worse than doing nothing at all.</div>
+        <div class="chart" id="c-policy"></div>
+      </figure>
+
+      <figure>
+        <div class="figtitle">The decision layer matters most when the model is weakest</div>
+        <div class="figsub">Each point is a model built on a restricted feature set. Labels show
+        how much more the expected-cost policy saves than the best fixed threshold — which was
+        allowed to tune its cutoff on the test window.</div>
+        <div class="chart" id="c-sweep"></div>
+        <div class="legend">
+          <span class="key"><span class="swatch" style="background:var(--rung-2)"></span>Expected-cost policy</span>
+          <span class="key"><span class="swatch" style="background:var(--accent)"></span>Best fixed threshold</span>
+        </div>
+        <figcaption>Production card-fraud models do not run at 0.96. This benchmark is the
+        regime where the idea matters least, and it still wins. Across 41 different cost-model
+        settings, the ranking never flips.</figcaption>
+      </figure>
+    </div>
+
+    <div class="slab">
+      <div class="slabhead"><span>a real decline · from the audit log</span><span>card ****2297</span></div>
+      <div class="slabbody"><span class="hl">Declined: 847 at Mohr-Bayer (shopping_net).</span>
+Model probability of fraud 100.00%. Expected cost of this action 0,
+versus 1,347 if approved outright.
+
+<span class="ac">Evidence:</span>
+  - [spend_profile] Amount 847 is 15.0x this card's average
+    and 12.9 standard deviations above it.
+  - [model] Model puts fraud probability at 100.00% — top 0.01%
+    of scored traffic.
+  - [novelty] First-time merchant never used by this card.
+
+<span class="mut">Checks that did not fire: velocity, geo, merchant_risk, temporal.</span>
+
+<span class="mut">$</span> verify(audit.jsonl)
+<span class="hl">(True, None, 'chain intact across 1,699 records, head e13b21d1d7afb23d')</span></div>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="prose">
+      <p class="eyebrow">Failures</p>
+      <h2>What went wrong, in public.</h2>
+      <p class="lede">
+        A result with no failures in it has not been looked at hard enough. These are the three
+        that cost the most to find.
+      </p>
+    </div>
+
+    <div class="fails">
+      <div class="fail">
+        <div class="ft">Deleted on purpose</div>
+        <h3>A feature that had learned the opposite of reality</h3>
+        <p>The card’s own prior fraud rate ranked second by importance, worth 0.30 PR-AUC. Then
+        I checked its direction: cards with the <em>most</em> prior fraud had exactly zero
+        subsequent fraud. In this simulator a card is defrauded once, so “was defrauded” means
+        “is now safe”. In production it means the opposite — a reissued card belonging to a
+        targeted customer.</p>
+        <p>I deleted it. Under-protecting the people already harmed once is not a trade worth
+        making.</p>
+        <div class="stat">single-feature ROC-AUC <b>0.102</b> · cost of removal <b>₹21,553</b></div>
+      </div>
+
+      <div class="fail">
+        <div class="ft">Measured, then muzzled</div>
+        <h3>Geolocation is noise here, so it gets no vote</h3>
+        <p>Impossible-travel detection is one of the strongest signals in real card fraud, and
+        it is built. Then it was measured: distance from home scores ROC-AUC 0.494 against the
+        label — a coin flip. The simulator scatters merchant coordinates independently of fraud.</p>
+        <p>The check still runs and still reports. It is barred from escalating anything, with
+        the measurement recorded in the code beside the flag.</p>
+        <div class="stat">distance ROC-AUC <b>0.494</b> · a coin flip is <b>0.500</b></div>
+      </div>
+
+      <div class="fail">
+        <div class="ft">Flattered by a bug</div>
+        <h3>18 months of history compressed into 47 seconds</h3>
+        <p>Time features were built by dividing a pandas datetime by 10⁹. Pandas 3 stores
+        microseconds, so every velocity window silently covered the entire dataset and the
+        24-hour and 7-day counts were identical on every row.</p>
+        <p>The AUC went <em>up</em>. Nothing alerted, because leaks always flatter you. I found
+        it plotting distributions and noticing two columns were the same.</p>
+        <div class="stat">now pinned by a regression test · <b>35 tests passing</b></div>
+      </div>
+    </div>
+
+    <div class="prose" style="margin-top:34px">
+      <h3>And where it still fails</h3>
+      <p class="body">
+        <strong>38 frauds worth ₹3,770 get through</strong> — small, unremarkable, at familiar
+        merchants during normal hours. Catching them at these thresholds would cost more in
+        false declines than the fraud is worth. <strong>365 legitimate customers are
+        challenged or declined</strong>, mostly large first-time purchases at unfamiliar
+        merchants. And the <strong>rupee totals are not a forecast</strong>: they follow from
+        assumed cost parameters and a simulated dataset whose fraud is more separable than the
+        real thing. The ranking of policies survives all 41 settings tested. The totals do not.
+      </p>
+    </div>
+  </section>
+
+  <div class="close">
+    <h2>Everything here reproduces from a seed.</h2>
+    <p>
+      No notebook, and no number copied by hand. The failures are in the README, not just the
+      wins.
+    </p>
+    <div class="runcmds">bash scripts/generate_data.sh 700   <span class="c"># ~2 min</span>
+python scripts/build_features.py    <span class="c"># ~20 s · 917,792 rows, point-in-time</span>
+python scripts/train_model.py       <span class="c"># ~30 s</span>
+python scripts/demo_run.py          <span class="c"># ~60 s · audit log, memos, latency</span>
+python eval/run_eval.py             <span class="c"># the headline table</span>
+python eval/sensitivity.py          <span class="c"># 41 cost settings</span>
+pytest tests/ -q                    <span class="c"># 35 passing</span></div>
+  </div>
+
+  <footer>
+    <span><strong>Tribunal</strong> — every decline gets a reason, every reason gets a receipt</span>
+    <span>Razorpay AI Buildathon 2026 · AI Risk Manager</span>
+  </footer>
+</div>
+
+<div class="tip" id="tip"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============================================================
+     The cost model, ported verbatim from tribunal/economics.py.
+     Any change here has to be made there too, or the page starts
+     telling a story the system does not.
+     ============================================================ */
+  const CM = {
+    chargeback_fixed_fee: 500,
+    false_decline_margin_rate: 0.15,
+    false_decline_fixed: 250,
+    step_up_abandon_rate: 0.06,
+    step_up_blocks_fraud_rate: 0.90,
+    step_up_fixed_cost: 15,
+    review_cost: 120,
+    review_catches_fraud_rate: 0.95,
+    review_clears_legit_rate: 0.97,
+    review_delay_cost: 40
+  };
+
+  const ACTIONS = [
+    {id:"allow",  name:"Approve",   rung:"var(--rung-1)"},
+    {id:"step_up",name:"Challenge", rung:"var(--rung-2)"},
+    {id:"review", name:"Review",    rung:"var(--rung-3)"},
+    {id:"block",  name:"Decline",   rung:"var(--rung-4)"}
+  ];
+
+  function expectedCosts(p, amt){
+    const fd = CM.false_decline_margin_rate * amt + CM.false_decline_fixed;
+    const loss = amt + CM.chargeback_fixed_fee;
+    const q = 1 - p;
+    return {
+      allow:   p * loss,
+      block:   q * fd,
+      step_up: CM.step_up_fixed_cost
+             + p * (1 - CM.step_up_blocks_fraud_rate) * loss
+             + q * CM.step_up_abandon_rate * fd,
+      review:  CM.review_cost
+             + p * (1 - CM.review_catches_fraud_rate) * loss
+             + q * (CM.review_delay_cost + (1 - CM.review_clears_legit_rate) * fd)
+    };
+  }
+  const cheapest = c => ACTIONS.reduce((b,a)=> c[a.id] < c[b.id] ? a : b, ACTIONS[0]);
+
+  const inr = v => "₹" + Math.round(v).toLocaleString("en-US");
+  const inr0 = v => "₹" + (v < 10 ? v.toFixed(1) : Math.round(v).toLocaleString("en-US"));
+
+  /* ---------------- sliders on log scales ---------------- */
+  const A_MIN = 50, A_MAX = 200000;
+  const P_MIN = 0.0001, P_MAX = 0.99;
+  const toAmt  = t => A_MIN * Math.pow(A_MAX/A_MIN, t/1000);
+  const fromAmt= a => 1000 * Math.log(a/A_MIN) / Math.log(A_MAX/A_MIN);
+  const toProb = t => P_MIN * Math.pow(P_MAX/P_MIN, t/1000);
+  const fromProb=p => 1000 * Math.log(p/P_MIN) / Math.log(P_MAX/P_MIN);
+
+  const $ = id => document.getElementById(id);
+  const amtEl = $("amt"), probEl = $("prob");
+  const amtOut = $("amtOut"), probOut = $("probOut");
+  const costsEl = $("costs"), vaction = $("vaction"), vwhy = $("vwhy"), boundary = $("boundary");
+
+  const WHY = {
+    allow:   a => `Intervening would cost more than the risk. Expected loss if this goes bad is <b>${inr(a.exp)}</b>, and the cheapest thing anyone could do about it costs <b>${inr(a.alt)}</b>. Let it through.`,
+    step_up: a => `Worth a passcode, not a decline. Challenging costs <b>${inr0(a.chosen)}</b> against <b>${inr(a.allow)}</b> for approving it outright — and declining outright would cost <b>${inr(a.block)}</b> in lost custom.`,
+    review:  a => `Genuinely ambiguous, and large enough to be worth a person’s time. An analyst costs <b>₹120</b> and still beats every automatic option here.`,
+    block:   a => `The expected loss of approving this is <b>${inr(a.allow)}</b>. Even the friction of turning away a real customer — <b>${inr(a.block)}</b> — is cheaper. Decline.`
+  };
+
+  function findFlip(p, amt, current){
+    // Where does this decision change if only the amount moves?
+    let up = null, down = null;
+    for (let t = fromAmt(amt) + 1; t <= 1000; t++){
+      const a = toAmt(t);
+      if (cheapest(expectedCosts(p, a)).id !== current){ up = {amt:a, to:cheapest(expectedCosts(p,a))}; break; }
+    }
+    for (let t = fromAmt(amt) - 1; t >= 0; t--){
+      const a = toAmt(t);
+      if (cheapest(expectedCosts(p, a)).id !== current){ down = {amt:a, to:cheapest(expectedCosts(p,a))}; break; }
+    }
+    return {up, down};
+  }
+
+  function render(){
+    const amt = toAmt(+amtEl.value);
+    const p = toProb(+probEl.value);
+
+    amtOut.textContent = inr(amt);
+    probOut.textContent = p < 0.01 ? (p*100).toFixed(3) + "%" : (p*100).toFixed(1) + "%";
+
+    const c = expectedCosts(p, amt);
+    const win = cheapest(c);
+    const max = Math.max(...ACTIONS.map(a => c[a.id]), 1);
+
+    vaction.textContent = win.name;
+    vaction.style.color = win.rung;
+
+    const sorted = ACTIONS.map(a=>c[a.id]).sort((x,y)=>x-y);
+    vwhy.innerHTML = WHY[win.id]({
+      chosen: c[win.id], allow: c.allow, block: c.block,
+      exp: c.allow, alt: sorted[1]
+    });
+
+    costsEl.innerHTML = "";
+    ACTIONS.forEach(a => {
+      const row = document.createElement("div");
+      row.className = "crow" + (a.id === win.id ? " chosen" : "");
+      row.innerHTML =
+        `<span class="cname"><span class="dot" style="background:${a.rung}"></span>${a.name}` +
+        (a.id === win.id ? `<span class="chosentag">chosen</span>` : "") + `</span>` +
+        `<span class="ctrack"><span class="cfill" style="width:${Math.max(2, 100*c[a.id]/max)}%;background:${a.rung}"></span></span>` +
+        `<span class="cval">${inr0(c[a.id])}</span>`;
+      costsEl.appendChild(row);
+    });
+
+    const flip = findFlip(p, amt, win.id);
+    const bits = [];
+    if (flip.down) bits.push(`below <b>${inr(flip.down.amt)}</b> it becomes <b>${flip.down.to.name.toLowerCase()}</b>`);
+    if (flip.up)   bits.push(`above <b>${inr(flip.up.amt)}</b> it becomes <b>${flip.up.to.name.toLowerCase()}</b>`);
+    boundary.innerHTML = bits.length
+      ? `At this risk level, the same score gets a different answer depending on the amount: ${bits.join(", and ")}. That is the thing one threshold cannot do.`
+      : `At this risk level the answer is <b>${win.name.toLowerCase()}</b> at every amount — the risk decides it on its own.`;
+
+    document.querySelectorAll("#presets .pbtn").forEach(b => {
+      const near = Math.abs(+b.dataset.a - amt) / amt < 0.02 && Math.abs(+b.dataset.p - p) / p < 0.02;
+      b.setAttribute("aria-pressed", near ? "true" : "false");
+    });
+  }
+
+  amtEl.addEventListener("input", render);
+  probEl.addEventListener("input", render);
+  document.querySelectorAll("#presets .pbtn").forEach(b => {
+    b.addEventListener("click", () => {
+      amtEl.value = Math.round(fromAmt(+b.dataset.a));
+      probEl.value = Math.round(fromProb(+b.dataset.p));
+      render();
+    });
+  });
+  render();
+
+  /* ============================ charts ============================ */
+  const tip = $("tip");
+  function showTip(e, html){
+    tip.innerHTML = html; tip.classList.add("on");
+    let x = e.clientX + 14, y = e.clientY + 14;
+    const r = tip.getBoundingClientRect();
+    if (x + r.width > innerWidth - 8) x = e.clientX - r.width - 14;
+    if (y + r.height > innerHeight - 8) y = e.clientY - r.height - 14;
+    tip.style.left = x + "px"; tip.style.top = y + "px";
+  }
+  const hideTip = () => tip.classList.remove("on");
+  function attach(el, html){
+    el.addEventListener("mousemove", e => showTip(e, html));
+    el.addEventListener("mouseleave", hideTip);
+    el.setAttribute("tabindex","0");
+    el.addEventListener("focus", () => {
+      const b = el.getBoundingClientRect();
+      showTip({clientX:b.left+b.width/2, clientY:b.top}, html);
+    });
+    el.addEventListener("blur", hideTip);
+  }
+
+  const NS = "http://www.w3.org/2000/svg";
+  const mk = (n, at) => { const e = document.createElementNS(NS, n);
+    for (const k in at) e.setAttribute(k, at[k]); return e; };
+  const compact = v => Math.abs(v) >= 1e6 ? (v/1e6).toFixed(2).replace(/\.?0+$/,"")+"M"
+                     : Math.abs(v) >= 1e3 ? Math.round(v/1e3)+"k" : String(Math.round(v));
+
+  (function policyChart(){
+    const host = $("c-policy");
+    const data = [
+      {l:"Hand-written rules",      v:-156541,  n:"81.2% of fraud stopped · 3,607 good customers declined"},
+      {l:"Approve everything",      v:0,        n:"the status quo · ₹560,519 of fraud let through"},
+      {l:"Model, block at p ≥ 0.5", v:1014614,  n:"97.1% stopped · 63 good customers hit"},
+      {l:"Tribunal",                v:1040422,  n:"99.3% stopped · 365 touched · ₹16,844 friction", hero:true}
+    ];
+    const W=880, rowH=52, padT=8, padB=34, labelW=182, padR=136;
+    const H = padT + data.length*rowH + padB;
+    const s = mk("svg",{viewBox:`0 0 ${W} ${H}`, role:"img"});
+    s.setAttribute("aria-label","Net rupees saved by policy");
+    host.appendChild(s);
+
+    const lo = Math.min(...data.map(d=>d.v))*1.14, hi = Math.max(...data.map(d=>d.v))*1.05;
+    const x0=labelW, x1=W-padR, sx = v => x0 + (v-lo)/(hi-lo)*(x1-x0), zero = sx(0);
+
+    [0,500000,1000000].forEach(t=>{
+      s.appendChild(mk("line",{x1:sx(t),x2:sx(t),y1:padT,y2:padT+data.length*rowH,
+        stroke:"var(--line-soft)","stroke-width":1}));
+      const tx = mk("text",{x:sx(t),y:H-13,"text-anchor":"middle",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent = t===0 ? "₹0" : compact(t); s.appendChild(tx);
+    });
+
+    data.forEach((d,i)=>{
+      const cy = padT + i*rowH + rowH/2;
+      const lab = mk("text",{x:labelW-16,y:cy+4,"text-anchor":"end",
+        fill:d.hero?"var(--ink)":"var(--ink-2)","font-size":"13",
+        "font-weight":d.hero?"700":"400","font-family":"var(--body)"});
+      lab.textContent = d.l; s.appendChild(lab);
+
+      const neg = d.v < 0, bh = 22;
+      const g = mk("g",{});
+      g.appendChild(mk("rect",{x: neg ? sx(d.v) : zero, y: cy-bh/2,
+        width: Math.max(Math.abs(sx(d.v)-zero), d.v===0?0:1.5), height:bh,
+        fill: neg ? "var(--crit)" : (d.hero ? "var(--rung-2)" : "var(--ink-3)"), rx:3}));
+      const val = mk("text",{x: neg ? zero+11 : sx(d.v)+11, y:cy+4,
+        fill: neg?"var(--crit)":"var(--ink)","font-size":"12.5","font-weight":"600",
+        "font-family":"var(--mono)"});
+      val.textContent = (neg?"−":"") + inr(Math.abs(d.v));
+      g.appendChild(val); s.appendChild(g);
+      attach(g, `<b>${d.l}</b><br>${d.n}`);
+    });
+    s.appendChild(mk("line",{x1:zero,x2:zero,y1:padT-2,y2:padT+data.length*rowH+2,
+      stroke:"var(--ink-2)","stroke-width":1.5}));
+  })();
+
+  (function sweepChart(){
+    const host = $("c-sweep");
+    const rows = [
+      {m:"amount only",          pr:0.2849, thr:265927,  ec:698217},
+      {m:"+ merchant category",  pr:0.7204, thr:689738,  ec:874284},
+      {m:"+ time of day",        pr:0.8314, thr:792726,  ec:916619},
+      {m:"+ card spend profile", pr:0.8402, thr:793527,  ec:932449},
+      {m:"+ velocity",           pr:0.9587, thr:990881,  ec:1024879}
+    ];
+    const W=880,H=400,L=70,R=26,T=44,B=58;
+    const s = mk("svg",{viewBox:`0 0 ${W} ${H}`, role:"img"});
+    s.setAttribute("aria-label","Net saved versus model quality");
+    host.appendChild(s);
+
+    const xlo=0.22,xhi=1.0,yhi=1150000;
+    const sx = v => L + (v-xlo)/(xhi-xlo)*(W-L-R);
+    const sy = v => H-B - v/yhi*(H-T-B);
+
+    [0,250000,500000,750000,1000000].forEach(t=>{
+      s.appendChild(mk("line",{x1:L,x2:W-R,y1:sy(t),y2:sy(t),stroke:"var(--line-soft)","stroke-width":1}));
+      const tx=mk("text",{x:L-12,y:sy(t)+4,"text-anchor":"end",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent = t===0?"₹0":compact(t); s.appendChild(tx);
+    });
+    [0.3,0.5,0.7,0.9].forEach(t=>{
+      const tx=mk("text",{x:sx(t),y:H-B+22,"text-anchor":"middle",fill:"var(--ink-3)",
+        "font-size":"11.5","font-family":"var(--mono)"});
+      tx.textContent=t.toFixed(1); s.appendChild(tx);
+    });
+
+    s.appendChild(mk("polygon",{points:
+      rows.map(r=>`${sx(r.pr)},${sy(r.ec)}`).join(" ")+" "+
+      rows.slice().reverse().map(r=>`${sx(r.pr)},${sy(r.thr)}`).join(" "),
+      fill:"var(--rung-2)",opacity:"0.12"}));
+
+    const line = (key,color,label) => {
+      s.appendChild(mk("polyline",{points:rows.map(r=>`${sx(r.pr)},${sy(r[key])}`).join(" "),
+        fill:"none",stroke:color,"stroke-width":2.5,"stroke-linejoin":"round"}));
+      rows.forEach(r=>{
+        const g = mk("g",{});
+        g.appendChild(mk("circle",{cx:sx(r.pr),cy:sy(r[key]),r:6,fill:color,
+          stroke:"var(--surface)","stroke-width":2}));
+        s.appendChild(g);
+        attach(g, `<b>${r.m}</b><br>PR-AUC ${r.pr}<br>${label}: ${inr(r[key])}`);
+      });
+    };
+    line("thr","var(--accent)","best fixed threshold");
+    line("ec","var(--rung-2)","expected-cost policy");
+
+    let prevX=-1, tier=0;
+    rows.forEach((r,i)=>{
+      tier = (r.pr - prevX) < 0.05 ? tier+1 : 0; prevX = r.pr;
+      const t = mk("text",{x:sx(r.pr), y:sy(r.ec)-15-tier*19,
+        "text-anchor": i===0?"start":"middle", fill:"var(--ink)",
+        "font-size":"12.5","font-weight":"600","font-family":"var(--mono)"});
+      t.textContent = "+" + Math.round(100*(r.ec-r.thr)/r.thr) + "%";
+      s.appendChild(t);
+    });
+
+    const xl = mk("text",{x:(L+W-R)/2,y:H-10,"text-anchor":"middle",fill:"var(--ink-2)",
+      "font-size":"12.5","font-family":"var(--body)"});
+    xl.textContent = "Model quality on the held-out window (PR-AUC)";
+    s.appendChild(xl);
+  })();
+})();
+</script>
